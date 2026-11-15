@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Mohan Dong — Index</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Geist+Mono:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600&amp;display=swap">
+<style>
+body{margin:0;background:#000}
+a{color:#f5f5f7;text-decoration:underline;text-decoration-color:#48484a;text-decoration-thickness:1px;text-underline-offset:5px;transition:text-decoration-color .2s}
+a:hover{text-decoration-color:#f5f5f7}
+.mono{font-family:"SF Mono",ui-monospace,"Geist Mono",Menlo,monospace}
+.stage{position:sticky;top:0;height:0;z-index:0;pointer-events:none}
+.obj{position:absolute;top:0;left:0;width:100vw;height:100vh;display:block}
+.hero{position:relative;z-index:1;min-height:100vh;box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between;padding:40px clamp(20px,4vw,64px) 48px}
+.name{margin:0;font-size:clamp(76px,15.5vw,248px);font-weight:700;letter-spacing:-0.055em;line-height:.84}
+.idx{position:relative;z-index:1;list-style:none;margin:0;padding:0 clamp(20px,4vw,64px)}
+.idx>li{border-top:1px solid #2c2c2e}
+.idx>li:last-child{border-bottom:1px solid #2c2c2e}
+.row{all:unset;box-sizing:border-box;width:100%;min-height:44px;cursor:pointer;display:grid;grid-template-columns:72px minmax(0,1fr) auto 48px;grid-template-areas:"n t m i";align-items:center;column-gap:16px;padding:26px 0}
+.row:focus-visible{outline:2px solid #f5f5f7;outline-offset:6px;border-radius:4px}
+.row .n{grid-area:n;font-size:14px;color:#86868b;align-self:start;padding-top:1.1em}
+.row .t{grid-area:t;font-size:clamp(44px,7.4vw,116px);font-weight:700;letter-spacing:-0.045em;line-height:.95;color:#f5f5f7;transition:color .35s ease}
+.row .t sup{font-size:.28em;letter-spacing:0;font-weight:500;vertical-align:top;margin-left:.2em;position:relative;top:.35em}
+.row .m{grid-area:m;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:#86868b;text-align:right}
+.row .i{grid-area:i;justify-self:end;width:28px;height:28px;color:#f5f5f7;transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+.row[aria-expanded="true"] .i{transform:rotate(45deg)}
+.idx:has(.row:hover) .row:not(:hover) .t{color:#6e6e73}
+.panel{display:grid;grid-template-rows:0fr;transition:grid-template-rows .6s cubic-bezier(.2,.8,.2,1)}
+.panel>div{overflow:hidden;min-height:0;visibility:hidden;transition:visibility 0s .6s}
+.panel.open{grid-template-rows:1fr}
+.panel.open>div{visibility:visible;transition:visibility 0s}
+.pin{padding:4px 48px 56px 88px;display:flex;flex-wrap:wrap;gap:40px 64px}
+.spec{display:grid;grid-template-columns:160px minmax(0,1fr);row-gap:0;max-width:880px;flex:1 1 560px}
+.spec>dt,.spec>dd{margin:0;padding:18px 0;border-top:1px solid #1d1d1f}
+.spec>dt{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#86868b;padding-top:24px}
+.spec>dd{font-size:clamp(20px,2vw,28px);font-weight:500;letter-spacing:-0.015em;line-height:1.3}
+.lede{margin:0;font-size:clamp(26px,3vw,44px);font-weight:600;letter-spacing:-0.03em;line-height:1.1;max-width:22ch}
+.links{display:flex;flex-wrap:wrap;gap:12px}
+.btn{display:inline-flex;align-items:center;gap:8px;min-height:44px;box-sizing:border-box;padding:0 20px;border-radius:999px;border:1px solid #48484a;color:#f5f5f7;text-decoration:none;font-size:15px;font-weight:500;transition:background .2s,color .2s,border-color .2s}
+.btn:hover{background:#f5f5f7;color:#000;border-color:#f5f5f7}
+.code{margin:0;padding:20px 22px;border-radius:14px;background:#0d0d0d;border:1px solid #1d1d1f;font-size:14px;line-height:1.75;color:#d1d1d6;white-space:pre-wrap;overflow-x:auto}
+.post{display:grid;grid-template-columns:140px minmax(0,1fr) 28px;align-items:baseline;column-gap:16px;padding:22px 0;border-top:1px solid #1d1d1f;text-decoration:none}
+.post:hover .pt{color:#fff}
+.post .pd{font-size:13px;color:#86868b}
+.post .pt{font-size:clamp(20px,2.2vw,30px);font-weight:600;letter-spacing:-0.02em;line-height:1.2;color:#d1d1d6;transition:color .2s}
+.htb{flex:1 1 100%;box-sizing:border-box;border:1px solid #1c1c1c;border-radius:14px;background-color:#050505;background-image:radial-gradient(rgba(255,255,255,.07) 1px,transparent 1px);background-size:22px 22px;padding:clamp(24px,4vw,48px);font-family:"Space Grotesk",system-ui,sans-serif;color:#ececec;display:flex;flex-wrap:wrap;gap:32px 56px;align-items:flex-end;justify-content:space-between}
+.htb-pill{display:inline-flex;align-items:center;min-height:44px;box-sizing:border-box;padding:0 18px;border-radius:6px;border:1px solid #3a2a44;color:#bfa9cc;text-decoration:none;font:600 12px/1 "JetBrains Mono",monospace;letter-spacing:.06em;text-transform:uppercase}
+.htb-pill:hover{border-color:#6b4a7d;color:#f2e6f8}
+.htb-pill.on{background:#6b4a7d;border-color:#6b4a7d;color:#fff}
+.foot{position:relative;z-index:1;display:flex;flex-wrap:wrap;justify-content:space-between;gap:32px;padding:96px clamp(20px,4vw,64px) 48px}
+@media (max-width:700px){
+  .obj{opacity:.6}
+  .hero{min-height:88vh;padding:24px 20px 32px}
+  .row{grid-template-columns:32px minmax(0,1fr) 28px;grid-template-areas:"n t i" ". m .";row-gap:8px;padding:22px 0}
+  .row .n{padding-top:.5em;font-size:12px}
+  .row .m{text-align:left;font-size:11px}
+  .row .i{width:22px;height:22px}
+  .pin{padding:0 0 40px 0;gap:28px}
+  .spec{grid-template-columns:1fr}
+  .spec>dt{padding:18px 0 4px}
+  .spec>dd{border-top:0;padding-top:0}
+  .post{grid-template-columns:minmax(0,1fr) 22px;row-gap:6px}
+  .post .pd{grid-column:1}
+  .post .pt{grid-column:1}
+  .post .pa{grid-column:2;grid-row:1 / span 2;align-self:center}
+}
+@media (prefers-reduced-motion:reduce){.panel,.panel>div,.row .i,.row .t{transition:none}}
+</style>
+</helmet>
+<div onPointerMove="{{onMove}}" style="position: relative; min-height: 100vh; background: #000; color: #f5f5f7; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', Inter, system-ui, sans-serif; -webkit-font-smoothing: antialiased; overflow-x: clip">
+
+<div class="stage" aria-hidden="true"><canvas class="obj" ref="{{setCanvas}}"></canvas></div>
+
+<section class="hero" aria-label="Introduction">
+<div class="mono" style="display: flex; justify-content: space-between; gap: 16px; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: #86868b">
+<span>Index — 06</span>
+<span>mohandong.com</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 40px">
+<h1 class="name">Mohan<br>Dong</h1>
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px 40px">
+<p style="margin: 0; font-size: clamp(20px, 2.2vw, 30px); font-weight: 500; letter-spacing: -0.02em; line-height: 1.25; max-width: 26ch">Software Engineering, University of Waterloo.</p>
+<p class="mono" style="margin: 0; font-size: 14px; letter-spacing: .04em; color: #86868b">Design. Develop. Deliver.</p>
+</div>
+</div>
+</section>
+
+<ol class="idx" onMouseLeave="{{leave}}">
+
+<li>
+<button type="button" class="row" aria-expanded="{{exp.about}}" aria-controls="p-about" onClick="{{toggle.about}}" onMouseEnter="{{enter.about}}" onFocus="{{enter.about}}">
+<span class="n mono">01</span>
+<span class="t">About</span>
+<span class="m mono">Person</span>
+<svg class="i" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M14 4v20M4 14h20"></path></svg>
+</button>
+<div id="p-about" class="{{pc.about}}"><div>
+<div class="pin">
+<dl class="spec">
+<dt class="mono">Studying</dt><dd>Software Engineering, University of Waterloo</dd>
+<dt class="mono">Experience</dt><dd>Software Developer Intern, Co-operators — Business Intelligence<br><span class="mono" style="font-size: 14px; color: #86868b; letter-spacing: .02em">May–Aug 2026 · Toronto</span></dd>
+<dt class="mono">This term</dt><dd>Compilers · Logic &amp; Computation · RISC-V</dd>
+<dt class="mono">Writes</dt><dd>Rust · TypeScript · Scala · Shell · RV32I</dd>
+<dt class="mono">Setup</dt><dd>Neovim · Ghostty · yabai + skhd · SF Mono</dd>
+</dl>
+</div>
+</div></div>
+</li>
+
+<li>
+<button type="button" class="row" aria-expanded="{{exp.badge}}" aria-controls="p-badge" onClick="{{toggle.badge}}" onMouseEnter="{{enter.badge}}" onFocus="{{enter.badge}}">
+<span class="n mono">02</span>
+<span class="t">Hack the Badge</span>
+<span class="m mono">Project · Rust</span>
+<svg class="i" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M14 4v20M4 14h20"></path></svg>
+</button>
+<div id="p-badge" class="{{pc.badge}}"><div>
+<div class="pin">
+<div class="htb">
+<div style="display: flex; flex-direction: column; gap: 14px; max-width: 620px">
+<span style="font: 600 11px/1 'JetBrains Mono', monospace; letter-spacing: .14em; color: #c9a7dc">HACK THE NORTH 2026 · UNOFFICIAL</span>
+<h2 style="margin: 0; font-size: clamp(34px, 4.4vw, 60px); font-weight: 600; letter-spacing: -0.02em; line-height: 1">Badge Emulator<span style="color: #b07ccb">.</span></h2>
+<p style="margin: 0; font-size: 18px; line-height: 1.5; color: #bdbdbd">An emulator for the Hack the North 2026 badge: a Lua sandbox and the real firmware modes, on a badge that hangs from a lanyard you can drag and fling. Not affiliated with Hack the North.</p>
+<span style="font: 500 12px/1 'JetBrains Mono', monospace; letter-spacing: .06em; color: #8a8a8a">RUST · GPL-3.0</span>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<a class="htb-pill on" href="https://hack-the-badge.mohandong.com">Open emulator ↗</a>
+<a class="htb-pill" href="https://github.com/powersagitar/hack-the-badge">Source ↗</a>
+</div>
+</div>
+</div>
+</div></div>
+</li>
+
+<li>
+<button type="button" class="row" aria-expanded="{{exp.howto}}" aria-controls="p-howto" onClick="{{toggle.howto}}" onMouseEnter="{{enter.howto}}" onFocus="{{enter.howto}}">
+<span class="n mono">03</span>
+<span class="t">how-to</span>
+<span class="m mono">Project · Shell</span>
+<svg class="i" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M14 4v20M4 14h20"></path></svg>
+</button>
+<div id="p-howto" class="{{pc.howto}}"><div>
+<div class="pin">
+<div style="flex: 1 1 360px; display: flex; flex-direction: column; gap: 24px">
+<p class="lede">Turn a plain-English request into a shell command on your prompt.</p>
+<p class="mono" style="margin: 0; font-size: 13px; letter-spacing: .06em; color: #86868b">ZSH · BASH · HOMEBREW · GPL-3.0</p>
+<div class="links">
+<a class="btn" href="https://github.com/powersagitar/how-to">Source ↗</a>
+<a class="btn" href="https://github.com/powersagitar/homebrew-tap">Homebrew tap ↗</a>
+</div>
+</div>
+<pre class="code mono" style="flex: 1 1 440px"><span style="color: #86868b"># install</span>
+brew install powersagitar/tap/how-to
+<span style="color: #86868b"># then, in ~/.zshrc</span>
+source /opt/homebrew/opt/how-to/share/how-to/how-to.zsh
+
+<span style="color: #86868b">❯</span> how-to <span style="color: #86868b">&lt;plain-English request&gt;</span></pre>
+</div>
+</div></div>
+</li>
+
+<li>
+<button type="button" class="row" aria-expanded="{{exp.mssg}}" aria-controls="p-mssg" onClick="{{toggle.mssg}}" onMouseEnter="{{enter.mssg}}" onFocus="{{enter.mssg}}">
+<span class="n mono">04</span>
+<span class="t">mssg</span>
+<span class="m mono">Project · TypeScript</span>
+<svg class="i" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M14 4v20M4 14h20"></path></svg>
+</button>
+<div id="p-mssg" class="{{pc.mssg}}"><div>
+<div class="pin">
+<div style="flex: 1 1 360px; display: flex; flex-direction: column; gap: 24px">
+<p class="lede">A minimal static site generator.</p>
+<p class="mono" style="margin: 0; font-size: 13px; letter-spacing: .06em; color: #86868b">TYPESCRIPT</p>
+<div class="links">
+<a class="btn" href="https://github.com/powersagitar/mssg">Source ↗</a>
+</div>
+</div>
+</div>
+</div></div>
+</li>
+
+<li>
+<button type="button" class="row" aria-expanded="{{exp.writing}}" aria-controls="p-writing" onClick="{{toggle.writing}}" onMouseEnter="{{enter.writing}}" onFocus="{{enter.writing}}">
+<span class="n mono">05</span>
+<span class="t">Writing<sup class="mono">3</sup></span>
+<span class="m mono">Posts</span>
+<svg class="i" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M14 4v20M4 14h20"></path></svg>
+</button>
+<div id="p-writing" class="{{pc.writing}}"><div>
+<div class="pin" style="display: block">
+<div style="max-width: 1040px; border-bottom: 1px solid #1d1d1f">
+<a class="post" href="Post.dc.html"><span class="pd mono">2025-03-09</span><span class="pt">We Dream High</span><span class="pa" aria-hidden="true" style="color: #86868b">→</span></a>
+<a class="post" href="Post.dc.html"><span class="pd mono">2025-01-16</span><span class="pt">Mastermind—The ICS4U Culminating Project</span><span class="pa" aria-hidden="true" style="color: #86868b">→</span></a>
+<a class="post" href="Post.dc.html"><span class="pd mono">2024-02-01</span><span class="pt">Decoding Conditionals: A Dive into if-else, switch-case, Lookup Tables, and Interfaces</span><span class="pa" aria-hidden="true" style="color: #86868b">→</span></a>
+</div>
+</div>
+</div></div>
+</li>
+
+<li>
+<button type="button" class="row" aria-expanded="{{exp.contact}}" aria-controls="p-contact" onClick="{{toggle.contact}}" onMouseEnter="{{enter.contact}}" onFocus="{{enter.contact}}">
+<span class="n mono">06</span>
+<span class="t">Contact</span>
+<span class="m mono">Elsewhere</span>
+<svg class="i" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M14 4v20M4 14h20"></path></svg>
+</button>
+<div id="p-contact" class="{{pc.contact}}"><div>
+<div class="pin">
+<dl class="spec">
+<dt class="mono">Email</dt><dd><a href="mailto:mohan.dong@uwaterloo.ca">mohan.dong@uwaterloo.ca</a></dd>
+<dt class="mono">Résumé</dt><dd><a href="https://github.com/powersagitar/resume">PDF ↗</a></dd>
+<dt class="mono">GitHub</dt><dd><a href="https://github.com/powersagitar">@powersagitar ↗</a></dd>
+<dt class="mono">LinkedIn</dt><dd><a href="https://www.linkedin.com/in/powersagitar">in/powersagitar ↗</a></dd>
+</dl>
+</div>
+</div></div>
+</li>
+
+</ol>
+
+<footer class="foot mono" style="font-size: 13px; letter-spacing: .04em; color: #86868b">
+<div style="display: flex; flex-wrap: wrap; gap: 12px 32px">
+<span>© 2026 Mohan Dong · Share with attribution</span>
+</div>
+</footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"initialOpen":{"editor":"enum","options":["none","about","badge","howto","mssg","writing","contact"],"default":"none"},"$preview":{"width":1440,"height":2100}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    const o = props && props.initialOpen;
+    this.state = { open: o && o !== 'none' ? o : null };
+    this.key = this.state.open || 'home';
+    this.mx = 0; this.my = 0; this.cv = null;
+    this.ids = ['about', 'badge', 'howto', 'mssg', 'writing', 'contact'];
+    this.setCanvas = (el) => { this.cv = el; };
+    this.onMove = (e) => {
+      const w = window.innerWidth || 1, h = window.innerHeight || 1;
+      this.mx = e.clientX / w - 0.5; this.my = e.clientY / h - 0.5;
+    };
+    this.leave = () => { this.key = this.state.open || 'home'; };
+  }
+  componentDidMount() {
+    this.build();
+    this.reduce = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    this.t0 = performance.now(); this.last = this.t0; this.ry = 0.6; this.netA = this.key === 'about' ? 1 : 0;
+    const loop = (now) => { this.frame(now); this.raf = requestAnimationFrame(loop); };
+    this.raf = requestAnimationFrame(loop);
+  }
+  componentWillUnmount() { cancelAnimationFrame(this.raf); }
+  build() {
+    const N = 1200, r = Math.random, TAU = Math.PI * 2;
+    const make = (fn) => { const a = new Float32Array(N * 3); for (let i = 0; i < N; i++) { const p = fn(i); a[i * 3] = p[0]; a[i * 3 + 1] = p[1]; a[i * 3 + 2] = p[2]; } return a; };
+    const seg = (a, b, s) => [a[0] + (b[0] - a[0]) * s, a[1] + (b[1] - a[1]) * s];
+    // home: no closed shape, free-floating dust; drift is added per frame
+    const home = make(() => [(r() * 2 - 1) * 1.5, (r() * 2 - 1) * 1.05, (r() * 2 - 1) * 1.0]);
+    this.ph = new Float32Array(N * 3); this.fq = new Float32Array(N * 3);
+    for (let i = 0; i < N * 3; i++) { this.ph[i] = r() * TAU; this.fq[i] = 0.12 + r() * 0.3; }
+    // about: a small feed-forward neural network (4-7-7-3)
+    const layers = [4, 7, 7, 3], nodes = [], starts = [], edges = [];
+    layers.forEach((n, L) => {
+      starts.push(nodes.length);
+      const span = Math.min(0.85, n * 0.13);
+      for (let k = 0; k < n; k++) nodes.push([-1.1 + L * (2.2 / (layers.length - 1)), n === 1 ? 0 : (k / (n - 1) * 2 - 1) * span, (r() * 2 - 1) * 0.12]);
+    });
+    for (let L = 0; L < layers.length - 1; L++) for (let a = 0; a < layers[L]; a++) for (let b = 0; b < layers[L + 1]; b++) edges.push([starts[L] + a, starts[L + 1] + b, L]);
+    const NP = 22;
+    const about = make((i) => {
+      if (i < nodes.length * NP) {
+        const c = nodes[Math.floor(i / NP)], u = r() * 2 - 1, th = r() * TAU, q = Math.sqrt(1 - u * u), rad = 0.055 * Math.cbrt(r());
+        return [c[0] + q * Math.cos(th) * rad, c[1] + u * rad, c[2] + q * Math.sin(th) * rad];
+      }
+      const e = edges[(i - nodes.length * NP) % edges.length], s = r(), A = nodes[e[0]], B = nodes[e[1]];
+      return [A[0] + (B[0] - A[0]) * s, A[1] + (B[1] - A[1]) * s, A[2] + (B[2] - A[2]) * s];
+    });
+    this.net = { nodes, edges, depth: layers.length - 1 };
+    const badge = make((i) => {
+      // portrait board: the long side is vertical, lanyard clips to the top edge
+      if (i < N * 0.82) return [(r() * 2 - 1) * 0.5, (r() * 2 - 1) * 0.78 + 0.3, (r() * 2 - 1) * 0.025];
+      const s = r(), side = i % 2 ? 1 : -1;
+      return [side * 0.32 * (1 - s), -0.48 - 0.82 * s, 0];
+    });
+    const howto = make((i) => {
+      const k = i % 3, s = r();
+      const p = k === 0 ? seg([-0.75, -0.5], [-0.1, 0], s) : k === 1 ? seg([-0.1, 0], [-0.75, 0.5], s) : seg([0.12, 0.5], [0.8, 0.5], s);
+      return [p[0] + (r() - 0.5) * 0.08, p[1] + (r() - 0.5) * 0.08, (r() * 2 - 1) * 0.16];
+    });
+    const mssg = make((i) => {
+      const k = (i % 4) - 1.5;
+      return [(r() * 2 - 1) * 0.6 + k * 0.14, (r() * 2 - 1) * 0.8 - k * 0.14, k * 0.34];
+    });
+    const writing = make((i) => {
+      const side = i % 2 ? 1 : -1, row = Math.floor(r() * 15), a = r() * (row % 5 === 4 ? 0.5 : 0.85), tilt = 0.4;
+      return [side * (0.06 + a * Math.cos(tilt)), -0.72 + row * 0.1, a * Math.sin(tilt)];
+    });
+    // contact: a Starlink-style constellation (Walker-like shells at 53°) around a dotted Earth
+    const PL = 6, KS = 10, INC = 53 * Math.PI / 180, RO = 0.9, RE = 0.55;
+    this.orbit = (p, u) => {
+      const x0 = RO * Math.cos(u), z0 = RO * Math.sin(u), y = -z0 * Math.sin(INC), z = z0 * Math.cos(INC), O = p * TAU / PL;
+      return [x0 * Math.cos(O) + z * Math.sin(O), y, -x0 * Math.sin(O) + z * Math.cos(O)];
+    };
+    this.sky = { PL, KS, RE };
+    const ME = Math.floor(N * 0.62);
+    const contact = make((i) => {
+      if (i < ME) { const y = 1 - 2 * (i + 0.5) / ME, q = Math.sqrt(1 - y * y), th = i * 2.39996; return [Math.cos(th) * q * RE, y * RE, Math.sin(th) * q * RE]; }
+      return this.orbit((i - ME) % PL, r() * TAU);
+    });
+    this.shapes = { home, about, badge, howto, mssg, writing, contact };
+    this.cur = new Float32Array(this.shapes[this.key] || home);
+    this.spd = new Float32Array(N); for (let i = 0; i < N; i++) this.spd[i] = 0.035 + r() * 0.06;
+    this.N = N;
+  }
+  frame(now) {
+    const cv = this.cv; if (!cv || !this.cur) return;
+    const w = cv.clientWidth, h = cv.clientHeight; if (!w || !h) return;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const W = Math.round(w * dpr), H = Math.round(h * dpr);
+    if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+    const ctx = cv.getContext('2d'); if (!ctx) return;
+    ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, W, H);
+    const t = (now - this.t0) / 1000, dt = Math.min(0.05, (now - this.last) / 1000); this.last = now;
+    const key = this.key, tgt = this.shapes[key] || this.shapes.home, c = this.cur;
+    const isHome = key === 'home' || !this.shapes[key], isNet = key === 'about', isSky = key === 'contact';
+    const TAU = Math.PI * 2;
+    if (this.reduce) this.ry = 0.6;
+    else if (isNet) { const goal = Math.round((this.ry - 0.35) / TAU) * TAU + 0.35 + 0.18 * Math.sin(t * 0.5); this.ry += (goal - this.ry) * 0.04; }
+    else this.ry += dt * (isHome ? 0.02 : isSky ? 0.06 : 0.2);
+    this.netA += ((isNet ? 1 : 0) - this.netA) * 0.06;
+    this.skyA = (this.skyA || 0) + ((isSky ? 1 : 0) - (this.skyA || 0)) * 0.06;
+    if (this.hA === undefined) this.hA = isHome ? 1 : 0;
+    this.hA += ((isHome ? 1 : 0) - this.hA) * (this.reduce ? 1 : 0.05);
+    const ry = this.ry + this.mx * 0.6, rx = (isNet ? -0.08 : isSky ? -0.38 : -0.2) + this.my * 0.3;
+    const cy = Math.cos(ry), sy = Math.sin(ry), cx = Math.cos(rx), sx = Math.sin(rx);
+    // shapes sit in the right part of the screen (top on phones); the default dust fills the whole viewport
+    const phone = w <= 700, hA = this.hA;
+    const S = (phone ? Math.min(W, H * 0.72) : Math.min(W * 0.58, H)) * 0.34;
+    const sox = phone ? W * 0.5 : W * 0.71, soy = phone ? H * 0.36 : H * 0.5;
+    const Sx = S + (W * 0.5 / 1.3 - S) * hA, Sy = S + (H * 0.5 / 0.92 - S) * hA;
+    const ox = sox + (W * 0.5 - sox) * hA, oy = soy + (H * 0.5 - soy) * hA;
+    const proj = (x, y, z) => { const x1 = x * cy + z * sy, z1 = -x * sy + z * cy, y1 = y * cx - z1 * sx, z2 = y * sx + z1 * cx, f = 3 / (3 + z2); return [ox + x1 * f * Sx, oy + y1 * f * Sy, f, z2, x1, y1]; };
+    const amp = isHome && !this.reduce ? 0.18 : 0, ph = this.ph, fq = this.fq;
+    ctx.fillStyle = '#f5f5f7';
+    for (let i = 0; i < this.N; i++) {
+      const k = this.reduce ? 1 : this.spd[i], j = i * 3;
+      let tx = tgt[j], ty = tgt[j + 1], tz = tgt[j + 2];
+      if (amp) { tx += Math.sin(t * fq[j] + ph[j]) * amp; ty += Math.sin(t * fq[j + 1] + ph[j + 1]) * amp; tz += Math.sin(t * fq[j + 2] + ph[j + 2]) * amp; }
+      c[j] += (tx - c[j]) * k; c[j + 1] += (ty - c[j + 1]) * k; c[j + 2] += (tz - c[j + 2]) * k;
+      const p = proj(c[j], c[j + 1], c[j + 2]), s = (0.9 + p[2]) * dpr;
+      ctx.globalAlpha = Math.max(0.12, Math.min(1, (1.2 - p[3]) / 2)) * (isHome ? 0.6 : 1);
+      ctx.fillRect(p[0] - s / 2, p[1] - s / 2, s, s);
+    }
+    if (this.netA > 0.01) {
+      const { nodes, edges, depth } = this.net, pr = nodes.map((n) => proj(n[0], n[1], n[2]));
+      ctx.strokeStyle = '#f5f5f7'; ctx.lineWidth = 0.6 * dpr; ctx.globalAlpha = 0.14 * this.netA; ctx.beginPath();
+      for (const e of edges) { ctx.moveTo(pr[e[0]][0], pr[e[0]][1]); ctx.lineTo(pr[e[1]][0], pr[e[1]][1]); }
+      ctx.stroke();
+      if (!this.reduce) {
+        // forward pass: a signal sweeps layer by layer; each cycle lights a different subset of edges
+        const g = (t * 0.7) % (depth + 1.5), cyc = Math.floor((t * 0.7) / (depth + 1.5));
+        edges.forEach((e, n) => {
+          const s = g - e[2]; if (s < 0 || s > 1) return;
+          const hsh = Math.abs(Math.sin(n * 12.9898 + cyc * 78.233) * 43758.5453) % 1; if (hsh < 0.45) return;
+          const A = pr[e[0]], B = pr[e[1]], x = A[0] + (B[0] - A[0]) * s, y = A[1] + (B[1] - A[1]) * s, sz = 2.6 * dpr;
+          ctx.globalAlpha = this.netA * Math.sin(Math.PI * s); ctx.fillRect(x - sz / 2, y - sz / 2, sz, sz);
+        });
+      }
+    }
+    if (this.skyA > 0.01) {
+      const { PL, KS, RE } = this.sky, TAU2 = Math.PI * 2, mv = this.reduce ? 0 : t * 0.12, sats = [];
+      for (let p = 0; p < PL; p++) { const row = []; for (let k = 0; k < KS; k++) { const q = this.orbit(p, mv + k * TAU2 / KS + p * Math.PI / KS), pr = proj(q[0], q[1], q[2]); pr.push(pr[3] > 0 && Math.hypot(pr[4], pr[5]) < RE); pr.push(q); row.push(pr); } sats.push(row); }
+      const line = (A, B) => { if (A[6] || B[6]) return; ctx.moveTo(A[0], A[1]); ctx.lineTo(B[0], B[1]); };
+      // laser links: along each plane and across to the neighbouring plane
+      ctx.strokeStyle = '#f5f5f7'; ctx.lineWidth = 0.6 * dpr; ctx.globalAlpha = 0.16 * this.skyA; ctx.beginPath();
+      for (let p = 0; p < PL; p++) for (let k = 0; k < KS; k++) { line(sats[p][k], sats[p][(k + 1) % KS]); if (p < PL - 1) line(sats[p][k], sats[p + 1][k]); }
+      ctx.stroke();
+      for (const row of sats) for (const q of row) { if (q[6]) continue; const sz = 2.4 * q[2] * dpr; ctx.globalAlpha = this.skyA * Math.max(0.3, Math.min(1, (1.2 - q[3]) / 2)); ctx.fillRect(q[0] - sz / 2, q[1] - sz / 2, sz, sz); }
+      // one routed message: ground station -> hops through the mesh -> ground station
+      const hops = [[0, 1], [0, 2], [1, 2], [1, 3], [2, 3], [2, 4]].map(([p, k]) => sats[p][k]);
+      const ground = (q) => { const v = q[7], m = Math.hypot(v[0], v[1], v[2]) || 1, g = proj(v[0] / m * RE, v[1] / m * RE, v[2] / m * RE); g.push(g[3] > 0 && Math.hypot(g[4], g[5]) < RE * 0.98); return g; };
+      const path = [ground(hops[0]), ...hops, ground(hops[hops.length - 1])];
+      ctx.lineWidth = 1.1 * dpr; ctx.globalAlpha = 0.7 * this.skyA; ctx.beginPath();
+      for (let n = 0; n < path.length - 1; n++) line(path[n], path[n + 1]);
+      ctx.stroke();
+      if (!this.reduce) {
+        const segs = path.length - 1, g = (t * 0.45 % 1) * segs, n = Math.floor(g), s = g - n, A = path[n], B = path[n + 1];
+        if (!A[6] && !B[6]) { const x = A[0] + (B[0] - A[0]) * s, y = A[1] + (B[1] - A[1]) * s, sz = 4 * dpr; ctx.globalAlpha = this.skyA; ctx.fillRect(x - sz / 2, y - sz / 2, sz, sz); }
+      }
+    }
+    ctx.globalAlpha = 1;
+  }
+  renderVals() {
+    const open = this.state.open, exp = {}, pc = {}, toggle = {}, enter = {};
+    this.ids.forEach((id) => {
+      exp[id] = open === id ? 'true' : 'false';
+      pc[id] = open === id ? 'panel open' : 'panel';
+      toggle[id] = () => { const next = this.state.open === id ? null : id; this.key = next || id; this.setState({ open: next }); };
+      enter[id] = () => { this.key = id; };
+    });
+    return { exp, pc, toggle, enter, setCanvas: this.setCanvas, onMove: this.onMove, leave: this.leave };
+  }
+}
+</script>
+</body>
+</html>
