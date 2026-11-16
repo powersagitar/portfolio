@@ -15,7 +15,9 @@ export function Hero() {
         </h1>
         <div className="flex flex-wrap items-end justify-between gap-x-10 gap-y-4">
           <p className="m-0 max-w-[26ch] text-[clamp(20px,2.2vw,30px)] leading-[1.25] font-medium tracking-[-0.02em]">
-            Software Engineering, University of Waterloo.
+            Software Engineering,
+            <br />
+            University of Waterloo.
           </p>
           <p className="mono m-0 text-[14px] tracking-[.04em] text-[#86868b]">
             Design. Develop. Deliver.
