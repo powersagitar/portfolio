@@ -66,7 +66,8 @@ Personal portfolio and blog (Next.js 16, App Router, Tailwind, Bun). Read
 - Bun only: `bun`, `bunx`, `bun --bun ...`. Never npm, npx, pnpm, yarn or node.
   The only lockfile is `bun.lock`.
 - Post prose is never edited. Only change: `:::callout{type=note}` blocks are
-  `<Callout type="note">` JSX.
+  `<Callout type="note">` JSX; the text inside is byte-identical to the
+  original, trailing two-space hard breaks included.
 - Frontmatter keys are kebab-case: `title`, `description`, `publish-date`,
   `last-edited`. Dates are strings like `2024-02-01` (never shift the day).
 - Use `type`, not `interface`.

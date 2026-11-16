@@ -48,6 +48,7 @@ if (typeof window !== 'undefined') {
 
 export function IndexList({ posts, onCloudKey }: IndexListProps) {
   const [open, setOpen] = useState<RowId | null>(null);
+  const [instant, setInstant] = useState(false);
   const keyRef = useRef<CloudKey>('home');
 
   const setKey = useCallback(
@@ -72,10 +73,16 @@ export function IndexList({ posts, onCloudKey }: IndexListProps) {
         sessionStorage.removeItem(SCROLL_KEY);
       } catch {}
       if (!e && poppedBack && saved !== null) {
-        // Next scrolls to the hash target after mount; restore after that.
+        // Open without the panel transition so the page is already tall
+        // enough for the saved position. Next scrolls to the hash target
+        // after mount, so restore after that, then re-enable transitions.
         const y = Number(saved);
+        setInstant(true);
         requestAnimationFrame(() =>
-          requestAnimationFrame(() => window.scrollTo(0, y)),
+          requestAnimationFrame(() => {
+            window.scrollTo(0, y);
+            setInstant(false);
+          }),
         );
       } else {
         document.getElementById('writing')?.scrollIntoView();
@@ -154,6 +161,7 @@ export function IndexList({ posts, onCloudKey }: IndexListProps) {
     >
       <ol
         className="idx"
+        data-instant={instant || undefined}
         onClickCapture={(e) => {
           if (!(e.target as Element).closest('a')) return;
           try {
