@@ -4,6 +4,7 @@ import { contact } from './shapes/contact';
 import { home } from './shapes/home';
 import { howto } from './shapes/howto';
 import { mssg } from './shapes/mssg';
+import { writing } from './shapes/writing';
 import type { CloudKey, ShapeDef } from './types';
 
 export const SHAPES: Record<CloudKey, ShapeDef> = {
@@ -12,7 +13,6 @@ export const SHAPES: Record<CloudKey, ShapeDef> = {
   badge,
   howto,
   mssg,
-  // Temporary: Task 8 replaces this with the quill.
-  writing: home,
+  writing,
   contact,
 };

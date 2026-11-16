@@ -66,3 +66,12 @@ export function dotSize(f: number, dpr: number): number {
 export function dotAlpha(z: number, onHome: boolean): number {
   return Math.max(0.12, Math.min(1, (1.2 - z) / 2)) * (onHome ? 0.6 : 1);
 }
+
+export function clamp(x: number, lo: number, hi: number): number {
+  return Math.max(lo, Math.min(hi, x));
+}
+
+/** Main:372. */
+export function easeInOutQuad(x: number): number {
+  return x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2;
+}
