@@ -5,10 +5,11 @@ import { notFound } from 'next/navigation';
 import { DotCloud } from '@/components/dot-cloud';
 import { NextPost } from '@/components/post/NextPost';
 import { PostHeader } from '@/components/post/PostHeader';
+import { Toc } from '@/components/post/Toc';
 import { Footer } from '@/components/site/Footer';
 import { MetaRow } from '@/components/site/MetaRow';
 import { postPosition, splitTitle } from '@/lib/post-meta';
-import { getPost, getPosts } from '@/lib/posts';
+import { getOutline, getPost, getPosts } from '@/lib/posts';
 import {
   POSTS_SECTION,
   sectionHref,
@@ -66,6 +67,7 @@ export default async function PostPage({
     `@content/blog/${yyyy}/${mm}/${dd}/${slug}.mdx`
   );
   const { index, total, next, nextIndex } = postPosition(getPosts(), post.path);
+  const outline = getOutline(p);
   const { headline, subhead } = splitTitle(post.title, post.description);
 
   return (
@@ -88,9 +90,18 @@ export default async function PostPage({
           headline={headline}
           subhead={subhead}
         />
-        <article className="post-body">
-          <Body />
-        </article>
+        <div className="post-layout">
+          <article className="post-body">
+            <Body />
+          </article>
+          {outline.sections.length > 0 && (
+            <Toc
+              sections={outline.sections}
+              publishDate={post.publishDate}
+              codeBlocks={outline.codeBlocks}
+            />
+          )}
+        </div>
         <NextPost
           index={nextIndex}
           total={total}
