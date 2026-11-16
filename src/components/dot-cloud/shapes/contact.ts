@@ -1,4 +1,5 @@
 import { TAU } from '../math';
+import { constellationOverlay } from '../overlays/constellation';
 import type { ShapeDef } from '../types';
 import { make } from './make';
 
@@ -49,4 +50,5 @@ export const contact: ShapeDef = {
   },
   view: { kind: 'spin', rate: 0.06 },
   tilt: -0.38,
+  overlay: constellationOverlay,
 };

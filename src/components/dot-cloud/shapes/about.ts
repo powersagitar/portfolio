@@ -1,4 +1,5 @@
 import { TAU } from '../math';
+import { networkOverlay } from '../overlays/network';
 import type { ShapeDef } from '../types';
 import { make } from './make';
 
@@ -54,4 +55,5 @@ export const about: ShapeDef = {
   },
   view: { kind: 'settle' },
   tilt: -0.08,
+  overlay: networkOverlay,
 };
