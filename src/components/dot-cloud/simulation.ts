@@ -1,4 +1,5 @@
 import {
+  STAGE_MAX,
   TAU,
   dotAlpha,
   dotSize,
@@ -252,7 +253,7 @@ export function createHomeSim(o: {
       cam.set(
         ry + i.mx * 0.6,
         shape.tilt + i.my * 0.3,
-        homeLayout(i.W, i.H, i.phone, homeBlend),
+        homeLayout(i.W, i.H, i.phone, homeBlend, STAGE_MAX * i.dpr),
       );
       fillDots(dots, cur, cam, i.dpr, isHome);
 

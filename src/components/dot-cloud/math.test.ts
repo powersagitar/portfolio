@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'bun:test';
 
 import {
+  STAGE_MAX,
   dotAlpha,
   dotSize,
   easeRate,
@@ -40,6 +41,30 @@ describe('layouts', () => {
       oy: 303.84,
       sx: 132.6,
       sy: 132.6,
+    });
+  });
+  test('home desktop, wider than the stage', () => {
+    // F = 1920, L = 760, S = min(1113.6, 1440) * 0.34
+    close(homeLayout(3440, 1440, false, 0, 1920), {
+      ox: 760 + 1920 * 0.71,
+      oy: 720,
+      sx: 378.624,
+      sy: 378.624,
+    });
+  });
+  test('home stage scales with dpr', () => {
+    close(homeLayout(6880, 2880, false, 0, STAGE_MAX * 2), {
+      ox: 1520 + 3840 * 0.71,
+      sx: 757.248,
+    });
+  });
+  test('home narrower than the stage is unchanged', () => {
+    close(homeLayout(1000, 800, false, 0, 1920), { ox: 710, sx: 197.2 });
+  });
+  test('home dust ignores the stage', () => {
+    close(homeLayout(3440, 1440, false, 1, 1920), {
+      ox: 1720,
+      sx: 1720 / 1.3,
     });
   });
   test('post', () => {

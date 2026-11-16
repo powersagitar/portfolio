@@ -11,15 +11,25 @@ export function isPhone(cssWidth: number): boolean {
   return cssWidth <= 700;
 }
 
-/** Main:412-415. W, H in device pixels; homeBlend 0 = shape layout, 1 = full-viewport dust. */
+/** Width of the centred stage in CSS px; mirrors `--stage` in globals.css. */
+export const STAGE_MAX = 1920;
+
+/**
+ * Main:412-415. W, H in device pixels; homeBlend 0 = shape layout, 1 = full-viewport dust.
+ * `maxW` (device px) caps the desktop shape's frame: the cloud is laid out in a
+ * centred stage of that width. Phone layout and the dust blend use the full W.
+ */
 export function homeLayout(
   W: number,
   H: number,
   phone: boolean,
   homeBlend: number,
+  maxW = Infinity,
 ): Layout {
-  const S = (phone ? Math.min(W, H * 0.72) : Math.min(W * 0.58, H)) * 0.34;
-  const sox = phone ? W * 0.5 : W * 0.71;
+  const F = Math.min(W, maxW);
+  const L = (W - F) / 2;
+  const S = (phone ? Math.min(W, H * 0.72) : Math.min(F * 0.58, H)) * 0.34;
+  const sox = phone ? W * 0.5 : L + F * 0.71;
   const soy = phone ? H * 0.36 : H * 0.5;
   const h = homeBlend;
   return {
