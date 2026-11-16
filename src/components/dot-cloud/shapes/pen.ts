@@ -4,114 +4,53 @@ export type PenLut = {
   P: [number, number][];
   L: number[];
   T: number;
-  lift: [number, number];
   /** penAt(1), computed once. */
   end: [number, number];
 };
 
 type Pt = [number, number];
 
-/** Main:333-338. "hello" in cursive (letter units: baseline y=0, x-height 1, ascenders 2.5). */
-const HELLO: Pt[] = [
-  [0, 0.1],
-  [0.4, 1.0],
-  [0.75, 2.0],
-  [0.7, 2.5],
-  [0.5, 2.5],
-  [0.45, 2.0],
-  [0.5, 1.0],
-  [0.55, 0],
-  [0.6, 0.6],
-  [0.85, 1.0],
-  [1.05, 0.9],
-  [1.1, 0.5],
-  [1.15, 0.05],
-  [1.35, 0.1],
-  [1.6, 0.5],
-  [1.85, 0.85],
-  [1.75, 1.0],
-  [1.5, 0.8],
-  [1.5, 0.3],
-  [1.7, 0.0],
-  [1.95, 0.15],
-  [2.2, 1.0],
-  [2.45, 2.0],
-  [2.4, 2.5],
-  [2.2, 2.4],
-  [2.15, 1.8],
-  [2.2, 0.8],
-  [2.3, 0.05],
-  [2.5, 0.15],
-  [2.75, 1.0],
-  [3.0, 2.0],
-  [2.95, 2.5],
-  [2.75, 2.4],
-  [2.7, 1.8],
-  [2.75, 0.8],
-  [2.85, 0.05],
-  [3.05, 0.15],
-  [3.3, 0.7],
-  [3.5, 1.0],
-  [3.7, 0.8],
-  [3.65, 0.2],
-  [3.45, 0.0],
-  [3.25, 0.3],
-  [3.35, 0.9],
-  [3.6, 1.0],
-  [3.85, 0.95],
-  [4.05, 0.9],
+/**
+ * Main:358-361. "MD" signature, quick style, in one stroke: a fast slanted M,
+ * the D stem, a wide bowl that swings back left and strikes through both
+ * letters into the nib (letter units, +y up; slanted and scaled in buildPen).
+ */
+const SIG: Pt[] = [
+  [0, 0.0],
+  [0.2, 1.0],
+  [0.4, 2.0],
+  [0.48, 1.2],
+  [0.55, 0.5],
+  [0.75, 1.3],
+  [0.95, 2.1],
+  [1.03, 1.1],
+  [1.1, 0.2],
+  [1.35, 0.05],
+  [1.6, 1.2],
+  [1.75, 2.3],
+  [1.7, 1.2],
+  [1.65, 0.05],
+  [2.6, 0.15],
+  [3.4, 0.7],
+  [3.6, 1.5],
+  [3.3, 2.2],
+  [2.5, 2.5],
+  [1.4, 2.4],
+  [0.4, 1.9],
+  [-0.3, 1.2],
+  [0.3, 0.95],
+  [2.2, 1.05],
+  [4.0, 1.15],
+  [5.2, 1.25],
 ];
 
-/** Main:339-342. */
-const WORLD: Pt[] = [
-  [4.7, 0.9],
-  [4.8, 0.4],
-  [4.95, 0.0],
-  [5.15, 0.4],
-  [5.25, 1.0],
-  [5.3, 0.4],
-  [5.45, 0.0],
-  [5.65, 0.4],
-  [5.75, 1.0],
-  [5.85, 0.95],
-  [6.05, 0.9],
-  [6.2, 1.0],
-  [6.4, 0.8],
-  [6.35, 0.2],
-  [6.15, 0.0],
-  [5.95, 0.3],
-  [6.05, 0.9],
-  [6.3, 1.0],
-  [6.5, 0.95],
-  [6.7, 0.9],
-  [6.75, 1.1],
-  [6.95, 0.95],
-  [7.0, 0.8],
-  [7.05, 0.4],
-  [7.1, 0.0],
-  [7.3, 0.15],
-  [7.55, 1.0],
-  [7.8, 2.0],
-  [7.75, 2.5],
-  [7.55, 2.4],
-  [7.5, 1.8],
-  [7.55, 0.8],
-  [7.65, 0.05],
-  [7.85, 0.15],
-  [8.3, 0.9],
-  [8.1, 1.0],
-  [7.9, 0.6],
-  [8.0, 0.05],
-  [8.25, 0.3],
-  [8.4, 1.2],
-  [8.55, 2.5],
-  [8.5, 1.5],
-  [8.45, 0.4],
-  [8.55, 0.0],
-  [8.75, 0.15],
-];
+/** Slant (x += SH * y) and scale from letter units to unit space. */
+const SH = 0.3;
+const K = 0.36;
+/** Where the stroke ends in unit space: the quill's nib. */
+export const NIB: Pt = [0.7, 0.5];
 
-/** Main:343-352. Catmull-Rom through pts, `per` samples per segment. */
+/** Main:362-371. Catmull-Rom through pts, `per` samples per segment. */
 function catmullRom(pts: Pt[], per: number): Pt[] {
   const out: Pt[] = [];
   const n = pts.length;
@@ -139,31 +78,26 @@ function catmullRom(pts: Pt[], per: number): Pt[] {
 
 let lut: PenLut | null = null;
 
-/** Main:331-358. Memoised. */
+/** Main:357-377. Memoised. The stroke ends exactly at NIB. */
 export function buildPen(): PenLut {
   if (lut) return lut;
-  const a = catmullRom(HELLO, 12);
-  const b = catmullRom(WORLD, 12);
-  const P = a
-    .concat(b)
-    .map((q): Pt => [0.55 + (q[0] - 8.75) * 0.2, 0.53 - q[1] * 0.2]);
+  const last = SIG[SIG.length - 1];
+  const ex = last[0] + SH * last[1];
+  const ey = last[1];
+  const P = catmullRom(SIG, 14).map((q): Pt => [
+    NIB[0] + (q[0] + SH * q[1] - ex) * K,
+    NIB[1] - (q[1] - ey) * K,
+  ]);
   const L = [0];
   for (let i = 1; i < P.length; i++)
     L.push(L[i - 1] + Math.hypot(P[i][0] - P[i - 1][0], P[i][1] - P[i - 1][1]));
-  const T = L[L.length - 1];
-  const built: PenLut = {
-    P,
-    L,
-    T,
-    lift: [L[a.length - 1] / T, L[a.length] / T],
-    end: [0, 0],
-  };
+  const built: PenLut = { P, L, T: L[L.length - 1], end: [0, 0] };
   penInto(built, 1, built.end, 0);
   lut = built;
   return lut;
 }
 
-/** Main:359-368. Allocation-free: writes the pen position at u (clamped) to out[j], out[j+1]. */
+/** Main:378-385. Allocation-free: writes the pen position at u (clamped) to out[j], out[j+1]. */
 export function penInto(
   { P, L, T }: Pick<PenLut, 'P' | 'L' | 'T'>,
   u: number,

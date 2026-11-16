@@ -9,7 +9,7 @@ import {
 } from './math';
 import { SHAPES } from './registry';
 import { mulberry32 } from './rng';
-import { writing } from './shapes/writing';
+import { writeFrame, writing } from './shapes/writing';
 import type {
   CloudKey,
   DotBatch,
@@ -55,6 +55,9 @@ export type HomeSim = {
     selectedAt: number;
   };
 };
+
+/** Post: seconds before the quill starts writing. */
+const POST_DELAY = 0.3;
 
 /** Default seed for the dot-cloud rng stream (any fixed value works). */
 export const DEFAULT_SEED = 0x5eed;
@@ -149,6 +152,7 @@ export function createHomeSim(o: {
   }
   const spd = new Float32Array(n);
   for (let i = 0; i < n; i++) spd[i] = 0.035 + r() * 0.06;
+  const rate = new Float32Array(n);
 
   const overlays: [CloudKey, Overlay][] = [];
   const overlayAlpha: Partial<Record<CloudKey, number>> = {};
@@ -200,9 +204,11 @@ export function createHomeSim(o: {
         selectedAt = now;
       }
 
-      // target: animated frame or the built points, plus home drift
+      // target: animated frame or the built points, plus home drift; rates
+      // default to each point's own, an animated shape may override them
+      rate.set(spd);
       if (shape.animate)
-        shape.animate(b, target, (now - selectedAt) / 1000, reduce);
+        shape.animate(b, target, (now - selectedAt) / 1000, reduce, rate);
       else target.set(b.points);
       if (isHome && !reduce) {
         const amp = 0.18;
@@ -214,7 +220,7 @@ export function createHomeSim(o: {
       if (!started || reduce) cur.set(target);
       else
         for (let p = 0; p < n; p++) {
-          const k = easeRate(spd[p], dt);
+          const k = easeRate(rate[p], dt);
           const j = p * 3;
           cur[j] += (target[j] - cur[j]) * k;
           cur[j + 1] += (target[j + 1] - cur[j + 1]) * k;
@@ -265,7 +271,10 @@ export function createHomeSim(o: {
   };
 }
 
-/** Post:150-184. The quill writes once from the first step; no morphing. */
+/**
+ * Post:79-207. The quill writes once from the first step (after a short
+ * delay); dots ease toward the frame as on home, so ink flies onto the line.
+ */
 export function createPostSim(o: {
   reduce: boolean;
   n?: number;
@@ -273,22 +282,40 @@ export function createPostSim(o: {
 }): { step(i: PostInput): SimFrame } {
   const { reduce } = o;
   const n = o.n ?? 900;
-  const b = writing.build(n, mulberry32(o.seed ?? DEFAULT_SEED));
-  const animate = writing.animate as NonNullable<ShapeDef['animate']>;
-  const buf = new Float32Array(n * 3);
+  const r = mulberry32(o.seed ?? DEFAULT_SEED);
+  const b = writing.build(n, r);
+  const spd = new Float32Array(n);
+  for (let i = 0; i < n; i++) spd[i] = 0.035 + r() * 0.06;
+  const rate = new Float32Array(n);
+  const target = new Float32Array(n * 3);
+  const cur = new Float32Array(n * 3);
   const dots = dotBatch(n);
   const frame: SimFrame = { dots, overlays: [] };
   const cam = camera();
   let t0: number | null = null;
+  let last = 0;
 
   return {
     step(i) {
+      const first = t0 === null;
       if (t0 === null) t0 = i.now;
       const t = (i.now - t0) / 1000;
-      animate(b, buf, t, reduce);
+      const dt = Math.min(0.05, (i.now - last) / 1000);
+      last = i.now;
+      rate.set(spd);
+      writeFrame(b, target, t - POST_DELAY, reduce, rate);
+      if (first || reduce) cur.set(target);
+      else
+        for (let p = 0; p < n; p++) {
+          const k = easeRate(rate[p], dt);
+          const j = p * 3;
+          cur[j] += (target[j] - cur[j]) * k;
+          cur[j + 1] += (target[j + 1] - cur[j + 1]) * k;
+          cur[j + 2] += (target[j + 2] - cur[j + 2]) * k;
+        }
       const ry = (reduce ? 0.6 : Math.sin(t * 0.3) * 0.5) + i.mx * 0.6;
       cam.set(ry, -0.25 + i.my * 0.3, postLayout(i.W, i.H));
-      fillDots(dots, buf, cam, i.dpr, false);
+      fillDots(dots, cur, cam, i.dpr, false);
       return frame;
     },
   };

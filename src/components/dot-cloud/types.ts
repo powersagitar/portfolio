@@ -12,6 +12,8 @@ export type Network = {
 export type ShapeBuild = {
   points: Float32Array;
   inkU?: Float32Array;
+  /** Writing: per point, the quill point unwritten ink rides on. */
+  inkAnchor?: Int32Array;
   net?: Network;
 };
 
@@ -66,6 +68,11 @@ export type ShapeDef = {
     out: Float32Array,
     tSinceSelected: number,
     reduce: boolean,
+    /**
+     * Per-point morph rate per 60 fps frame, prefilled with each point's
+     * default; animate may override entries (1 = snap to target).
+     */
+    rate?: Float32Array,
   ) => Float32Array;
   overlay?: (b: ShapeBuild) => Overlay;
 };

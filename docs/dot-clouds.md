@@ -19,9 +19,9 @@ within about ±0.9 so it survives rotation (home spins continuously, the post si
 swings `ry` by ±0.5 rad, and the mouse adds parallax) and perspective without
 leaving the frame. Several shapes deliberately exceed it: `home.ts` dust fills
 the whole box, `about.ts` nodes span x ±1.1, the quill in `writing.ts` reaches
-(1.2, -0.7), `mssg.ts` slabs reach y ±1.01 and x ±0.81, and `badge.ts` runs from
-y 1.08 (board bottom) to -1.3 (lanyard top). Check any such shape at phone size
-and while rotating.
+(1.35, -0.7) and its signature starts at x -1.31, `mssg.ts` slabs reach y ±1.01
+and x ±0.81, and `badge.ts` runs from y 1.08 (board bottom) to -1.3 (lanyard
+top). Check any such shape at phone size and while rotating.
 
 `math.ts` maps unit space to pixels (`projectInto`, `makeProjector`). With yaw
 `ry` and pitch `rx`:
@@ -54,8 +54,10 @@ of dots, and divide by area or length so density reads as even.
   lanyard. `contact.ts` does `ME = floor(n * 0.62)` for the Earth, rest orbits.
 - Residue split, `howto.ts`: `i % 3` picks one of three strokes (chevron arm,
   chevron arm, underscore). `mssg.ts`: `i % 4` picks one of four slabs.
-- Mixed, `writing.ts` (the quill): `i % 20` is `< 2` shaft, `< 9` vanes, else
-  ink. Ink points also record their path parameter in `ShapeBuild.inkU`.
+- Mixed, `writing.ts` (the quill): `i % 20` is `< 2` shaft, `< 8` barbs, `8`
+  down, else ink. Ink points also record their path parameter in
+  `ShapeBuild.inkU` and a random quill point to ride on in
+  `ShapeBuild.inkAnchor`.
 - Ranges plus residue, `about.ts`: the first `nodes.length * NP` points are
   22-point balls per node, the rest cycle through
   `edges[(i - ...) % edges.length]`.
@@ -89,8 +91,8 @@ All use the `Rng` (`() => number` in [0, 1)) passed to `build`, never
   `buildPen()` runs a Catmull-Rom spline through control points and builds a
   cumulative length table (`PenLut.L`), so `penAt(u)` returns the point at
   fraction `u` of the _length_, not of the parameter. Uniform `u` then gives
-  uniform density along the curve. `PenLut.lift` marks pen-up gaps; the quill
-  resamples `u` until it is outside them.
+  uniform density along the curve. The "MD" signature is one stroke (no pen-up
+  gaps) that ends exactly at the quill's nib (`NIB`).
 
 ## 4. Silhouette first
 
@@ -132,12 +134,15 @@ dot) and the fade `alpha`, which the sim eases in and out as the shape is
 selected.
 
 **Animated targets** (`ShapeDef.animate`) are for time-varying shapes. The sim
-calls `animate(build, out, tSinceSelected, reduce)` each frame and uses `out` as
-the target. The quill (`writing.ts`) stores each ink point's path parameter in
-`inkU`; per frame, point `i` goes to `penAt(min(inkU[i], p))` where `p` is the
-eased writing progress, so ink appears along the path in order. With `reduce`,
-`p = 1`: already finished. Selecting the shape again resets `tSinceSelected`, so
-it writes again from the start.
+calls `animate(build, out, tSinceSelected, reduce, rate)` each frame and uses
+`out` as the target; `rate` holds each point's morph rate (per 60 fps frame) and
+an animation may override entries (`1` snaps). The quill (`writing.ts`, via
+`writeFrame`) stores each ink point's path parameter in `inkU`. With `p` the
+eased writing progress (3 s, after 0.35 s on home and 0.3 s on posts), written
+ink (`inkU[i] <= p`) sits at `penAt(inkU[i])` and snaps there; unwritten ink
+rides on its `inkAnchor` quill point and, within `0.08` of the nib, slides down
+into it at a fast rate. With `reduce`, `p = 1`: already finished. Selecting the
+shape again resets `tSinceSelected`, so it writes again from the start.
 
 **Reduced motion** (`prefers-reduced-motion: reduce`): no drift, `ry` fixed at
 `0.6`, instant morphs, no pulses, no message dot, writing finished.
@@ -177,12 +182,12 @@ it writes again from the start.
 
 ## Catalogue
 
-| id        | Subject                          | Recipe                                              | Points split                            | View      | Overlay / animate         |
-| --------- | -------------------------------- | --------------------------------------------------- | --------------------------------------- | --------- | ------------------------- |
-| `home`    | Free-floating dust               | Uniform volume                                      | All points                              | spin 0.02 | Drift added per frame     |
-| `about`   | 4-7-7-3 feed-forward network     | `cbrt` ball clusters, pure-lerp segments            | 22 per node, rest by edge (`% edges`)   | settle    | `networkOverlay`          |
-| `badge`   | Name badge on a lanyard          | Uniform thin box, segments                          | 82% board, 18% lanyard                  | spin 0.2  | None                      |
-| `howto`   | Terminal prompt `>_`             | Jittered segments, z thickness                      | `i % 3`: two chevron arms, underscore   | spin 0.2  | None                      |
-| `mssg`    | Four stacked message pages       | Layered planes                                      | `i % 4`: one slab each                  | spin 0.2  | None                      |
-| `writing` | Quill writing "hello world"      | Shaft and vanes by area, spline with arc-length LUT | `i % 20`: <2 shaft, <9 vanes, else ink  | settle    | `animate`: writes in 5.5s |
-| `contact` | Earth with Starlink-style orbits | Fibonacci sphere, parametric orbits                 | 62% Earth, rest across 6 planes (`% 6`) | spin 0.06 | `constellationOverlay`    |
+| id        | Subject                          | Recipe                                                | Points split                                   | View      | Overlay / animate                               |
+| --------- | -------------------------------- | ----------------------------------------------------- | ---------------------------------------------- | --------- | ----------------------------------------------- |
+| `home`    | Free-floating dust               | Uniform volume                                        | All points                                     | spin 0.02 | Drift added per frame                           |
+| `about`   | 4-7-7-3 feed-forward network     | `cbrt` ball clusters, pure-lerp segments              | 22 per node, rest by edge (`% edges`)          | settle    | `networkOverlay`                                |
+| `badge`   | Name badge on a lanyard          | Uniform thin box, segments                            | 82% board, 18% lanyard                         | spin 0.2  | None                                            |
+| `howto`   | Terminal prompt `>_`             | Jittered segments, z thickness                        | `i % 3`: two chevron arms, underscore          | spin 0.2  | None                                            |
+| `mssg`    | Four stacked message pages       | Layered planes                                        | `i % 4`: one slab each                         | spin 0.2  | None                                            |
+| `writing` | Quill signing "MD"               | Curved shaft, barbs, down; spline with arc-length LUT | `i % 20`: <2 shaft, <8 barbs, 8 down, else ink | settle    | `animate`: writes in 3s, ink fed from the quill |
+| `contact` | Earth with Starlink-style orbits | Fibonacci sphere, parametric orbits                   | 62% Earth, rest across 6 planes (`% 6`)        | spin 0.06 | `constellationOverlay`                          |

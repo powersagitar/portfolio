@@ -96,23 +96,30 @@ describe('home sim', () => {
     run('writing', 1);
     const s = sim.state();
     expect(s.selectedAt).toBe(at);
-    const inkU = builds().writing.inkU!;
-    const p0 = penAt(0);
-    let ink = 0;
+    const w = builds().writing;
+    const inkU = w.inkU!;
+    const anchor = w.inkAnchor!;
+    const ox = penAt(0)[0] - penAt(1)[0];
+    const oy = penAt(0)[1] - penAt(1)[1];
+    let riding = 0;
     for (let i = 0; i < 1200; i++) {
       const j = i * 3;
-      if (inkU[i] >= 0) {
-        ink++;
-        expect(s.target[j]).toBeCloseTo(p0[0], 5);
-        expect(s.target[j + 1]).toBeCloseTo(p0[1], 5);
+      // ink far from the nib rides on its quill anchor at the pen start
+      if (inkU[i] >= 0.08) {
+        riding++;
+        const q = anchor[i] * 3;
+        expect(s.target[j]).toBeCloseTo(w.points[q] + ox, 5);
+        expect(s.target[j + 1]).toBeCloseTo(w.points[q + 1] + oy, 5);
       }
+      // ink about to be fed into the nib may move fast; the rest eases
+      const fast = inkU[i] >= 0 && inkU[i] < 0.08;
       for (let c = 0; c < 3; c++) {
         const move = Math.abs(s.cur[j + c] - prev[j + c]);
         const gap = Math.abs(s.target[j + c] - prev[j + c]);
-        expect(move).toBeLessThanOrEqual(0.1 * gap + 1e-6);
+        expect(move).toBeLessThanOrEqual((fast ? 0.5 : 0.1) * gap + 1e-6);
       }
     }
-    expect(ink).toBeGreaterThan(0);
+    expect(riding).toBeGreaterThan(0);
   });
 
   test('dt is clamped', () => {
@@ -208,6 +215,30 @@ describe('post sim', () => {
       expect(f.dots.xy[i * 2]).toBeCloseTo(p.x, 2);
       expect(f.dots.xy[i * 2 + 1]).toBeCloseTo(p.y, 2);
       expect(f.dots.alpha[i]).toBeCloseTo(dotAlpha(p.z, false), 5);
+    }
+  });
+
+  test('eases dots and settles on the finished quill', () => {
+    const sim = createPostSim({ reduce: false });
+    const step = (now: number) =>
+      sim.step({ now, mx: 0, my: 0, W: 1440, H: 900, dpr: 1 });
+    const a = step(0).dots.xy.slice();
+    const b1 = step(FRAME).dots.xy.slice();
+    expect(Array.from(b1)).not.toEqual(Array.from(a));
+    let f = step(FRAME * 2);
+    for (let k = 3; k < 60 * 8; k++) f = step(FRAME * k);
+    const b = writing.build(900, mulberry32(DEFAULT_SEED));
+    const pts = writing.animate!(b, new Float32Array(900 * 3), 1e9, false);
+    const t = (FRAME * (60 * 8 - 1)) / 1000;
+    const proj = makeProjector(
+      Math.sin(t * 0.3) * 0.5,
+      -0.25,
+      postLayout(1440, 900),
+    );
+    for (let i = 0; i < 900; i++) {
+      const p = proj(pts[i * 3], pts[i * 3 + 1], pts[i * 3 + 2]);
+      expect(f.dots.xy[i * 2]).toBeCloseTo(p.x, 0);
+      expect(f.dots.xy[i * 2 + 1]).toBeCloseTo(p.y, 0);
     }
   });
 });
