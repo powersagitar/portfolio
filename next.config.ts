@@ -1,9 +1,11 @@
 import type { NextConfig } from 'next';
 
+import createMDX from '@next/mdx';
+
 const nextConfig: NextConfig = {
-  /* config options here */
   cacheComponents: true,
   partialPrefetching: true,
+  pageExtensions: ['ts', 'tsx', 'md', 'mdx'],
   turbopack: {
     rules: {
       '*.css': {
@@ -14,4 +16,23 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+// Turbopack needs plugins by name with serialisable options.
+const withMDX = createMDX({
+  options: {
+    remarkPlugins: ['remark-frontmatter', 'remark-gfm'],
+    rehypePlugins: [
+      'rehype-slug',
+      ['rehype-autolink-headings', { behavior: 'wrap' }],
+      [
+        'rehype-pretty-code',
+        { theme: 'github-dark-default', keepBackground: false },
+      ],
+      [
+        'rehype-external-links',
+        { target: '_blank', rel: ['noopener', 'noreferrer'] },
+      ],
+    ],
+  },
+});
+
+export default withMDX(nextConfig);
