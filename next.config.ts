@@ -4,6 +4,9 @@ import createMDX from '@next/mdx';
 
 const nextConfig: NextConfig = {
   pageExtensions: ['ts', 'tsx', 'md', 'mdx'],
+  async redirects() {
+    return [{ source: '/blog', destination: '/#writing', permanent: true }];
+  },
   turbopack: {
     rules: {
       '*.css': {

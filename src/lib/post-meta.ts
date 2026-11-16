@@ -52,3 +52,4 @@ export function postPosition(
     next: posts[(i + 1) % posts.length],
   };
 }
+export const SITE_URL = 'https://www.mohandong.com';
