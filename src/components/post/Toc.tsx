@@ -60,6 +60,9 @@ export function Toc({ sections, publishDate, codeBlocks }: TocProps) {
       if (!target) return;
       e.preventDefault();
       target.scrollIntoView();
+      // Move focus too (keyboard users), without a second scroll.
+      if (!target.hasAttribute('tabindex')) target.tabIndex = -1;
+      target.focus({ preventScroll: true });
       // replaceState: no history entry per click (as in IndexList).
       const { pathname, search } = window.location;
       history.replaceState(
@@ -83,7 +86,7 @@ export function Toc({ sections, publishDate, codeBlocks }: TocProps) {
   }, [sections]);
 
   return (
-    <aside className="toc" aria-label="On this page">
+    <nav className="toc" aria-label="On this page">
       <p className="lbl mono">On this page</p>
       <div className="tl">
         <span className="rail" aria-hidden>
@@ -124,6 +127,6 @@ export function Toc({ sections, publishDate, codeBlocks }: TocProps) {
           </>
         )}
       </dl>
-    </aside>
+    </nav>
   );
 }

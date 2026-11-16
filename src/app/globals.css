@@ -137,6 +137,8 @@
 }
 
 .post-body {
+  grid-column: 1;
+  grid-row: 1;
   max-width: 760px;
   margin: 0;
   border-top: 1px solid #2c2c2e;
@@ -155,10 +157,16 @@
 .post-body h3 {
   scroll-margin-top: 32px;
 }
+.post-body :is(h2, h3)[tabindex='-1']:focus {
+  outline: none;
+}
 .toc {
   grid-column: 3;
+  grid-row: 1;
   position: sticky;
   top: 40px;
+  max-height: calc(100vh - 80px);
+  overflow-y: auto;
   margin-top: 48px;
   display: flex;
   flex-direction: column;
@@ -243,17 +251,22 @@
 @media (max-width: 1100px) {
   .post-layout {
     grid-template-columns: minmax(0, 1fr);
+    max-width: 760px;
     border-top: 1px solid #2c2c2e;
     padding-top: 48px;
   }
   .post-body {
+    grid-column: auto;
+    grid-row: auto;
     border-top: 0;
     padding-top: 0;
   }
   .toc {
-    grid-column: 1;
-    grid-row: 1;
+    grid-column: auto;
+    grid-row: auto;
     position: static;
+    max-height: none;
+    overflow-y: visible;
     margin: 0 0 24px;
   }
   .toc .rail,

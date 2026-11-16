@@ -25,6 +25,7 @@ Personal portfolio and blog (Next.js 16, App Router, Tailwind, Bun). Read
   `src/lib/posts.ts` (`server-only`) reads and indexes them with `gray-matter`;
   `src/app/blog/[yyyy]/[mm]/[dd]/[slug]` renders each through `@next/mdx` with
   `src/mdx-components.tsx`. The post route uses `dynamicParams = false`.
+  `getOutline` (`posts.ts`) feeds the post page's contents column.
 - Routes: `/` (home index + dot cloud), the post pages, `/rss.xml`
   (`src/app/rss.xml/route.tsx`), `/sitemap.xml`, `/robots.txt`, `/icon`, and a
   `/blog` redirect (308) to `POSTS_SECTION`'s hash (`/#writing`). All static.
@@ -43,6 +44,10 @@ Personal portfolio and blog (Next.js 16, App Router, Tailwind, Bun). Read
 
 ## Keep in sync
 
+- `src/lib/outline.ts` parses posts as plain CommonMark (no MDX/GFM extensions)
+  with one github-slugger over every heading; its ids must equal the ids
+  `rehype-slug` renders. A new remark/rehype plugin that changes headings, or
+  MDX expressions in headings, needs a check.
 - The stage width 1920px is `--stage` in `globals.css` and `STAGE_MAX` in
   `src/components/dot-cloud/math.ts`.
 - The feed's `feedComponents` in `src/lib/feed-components.tsx` must match

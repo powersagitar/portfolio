@@ -20,5 +20,8 @@ export function tocState(
     if (top <= line) active = i;
   });
   const raw = (line - article.top) / Math.max(1, article.height - 0.5 * vh);
-  return { active, progress: Math.min(1, Math.max(0, raw)) };
+  const progress = Math.min(1, Math.max(0, raw));
+  // Tall viewports: the last heading may never reach the line.
+  if (progress >= 1 && headingTops.length > 0) active = headingTops.length - 1;
+  return { active, progress };
 }

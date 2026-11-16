@@ -91,9 +91,6 @@ export default async function PostPage({
           subhead={subhead}
         />
         <div className="post-layout">
-          <article className="post-body">
-            <Body />
-          </article>
           {outline.sections.length > 0 && (
             <Toc
               sections={outline.sections}
@@ -101,6 +98,9 @@ export default async function PostPage({
               codeBlocks={outline.codeBlocks}
             />
           )}
+          <article className="post-body">
+            <Body />
+          </article>
         </div>
         <NextPost
           index={nextIndex}

@@ -23,6 +23,13 @@ describe('tocState', () => {
     });
   });
 
+  test('scrolled past the end: last entry even if its heading never hit the line', () => {
+    expect(tocState([-200, 600], { top: -1500, height: 2000 }, 1000)).toEqual({
+      active: 1,
+      progress: 1,
+    });
+  });
+
   test('no headings still returns a number', () => {
     expect(tocState([], { top: 0, height: 0 }, 1000)).toEqual({
       active: 0,
