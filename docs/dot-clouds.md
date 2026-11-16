@@ -19,8 +19,9 @@ within about ±0.9 so it survives rotation (home spins continuously, the post si
 swings `ry` by ±0.5 rad, and the mouse adds parallax) and perspective without
 leaving the frame. Several shapes deliberately exceed it: `home.ts` dust fills
 the whole box, `about.ts` nodes span x ±1.1, the quill in `writing.ts` reaches
-(1.2, -0.7), and `badge.ts` runs from y 1.08 (board bottom) to -1.3 (lanyard
-top). Check any such shape at phone size and while rotating.
+(1.2, -0.7), `mssg.ts` slabs reach y ±1.01 and x ±0.81, and `badge.ts` runs from
+y 1.08 (board bottom) to -1.3 (lanyard top). Check any such shape at phone size
+and while rotating.
 
 `math.ts` maps unit space to pixels (`projectInto`, `makeProjector`). With yaw
 `ry` and pitch `rx`:
@@ -94,7 +95,7 @@ All use the `Rng` (`() => number` in [0, 1)) passed to `build`, never
 ## 4. Silhouette first
 
 A cloud must read as its subject at a glance, and that comes mostly from the 2D
-outline. Design the outline first, then add depth. Thin z jitter adds volume
+outline. Design the outline first, then add depth. Thin z spread adds volume
 without blurring the silhouette: `howto.ts` uses `±0.16` of z on strokes only
 `0.08` wide in x/y, the badge `±0.025`. Check each new shape three ways: while
 it spins (`view: spin`), at phone size (narrow window, `isPhone`), and with
@@ -179,7 +180,7 @@ it writes again from the start.
 | id        | Subject                          | Recipe                                              | Points split                            | View      | Overlay / animate         |
 | --------- | -------------------------------- | --------------------------------------------------- | --------------------------------------- | --------- | ------------------------- |
 | `home`    | Free-floating dust               | Uniform volume                                      | All points                              | spin 0.02 | Drift added per frame     |
-| `about`   | 4-7-7-3 feed-forward network     | `cbrt` ball clusters, jittered segments             | 22 per node, rest by edge (`% edges`)   | settle    | `networkOverlay`          |
+| `about`   | 4-7-7-3 feed-forward network     | `cbrt` ball clusters, pure-lerp segments            | 22 per node, rest by edge (`% edges`)   | settle    | `networkOverlay`          |
 | `badge`   | Name badge on a lanyard          | Uniform thin box, segments                          | 82% board, 18% lanyard                  | spin 0.2  | None                      |
 | `howto`   | Terminal prompt `>_`             | Jittered segments, z thickness                      | `i % 3`: two chevron arms, underscore   | spin 0.2  | None                      |
 | `mssg`    | Four stacked message pages       | Layered planes                                      | `i % 4`: one slab each                  | spin 0.2  | None                      |
