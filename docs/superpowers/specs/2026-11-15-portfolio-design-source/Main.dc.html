@@ -298,9 +298,18 @@ class Component extends DCLogic {
       const k = (i % 4) - 1.5;
       return [(r() * 2 - 1) * 0.6 + k * 0.14, (r() * 2 - 1) * 0.8 - k * 0.14, k * 0.34];
     });
+    this.wU = new Float32Array(N).fill(-1);
     const writing = make((i) => {
-      const side = i % 2 ? 1 : -1, row = Math.floor(r() * 15), a = r() * (row % 5 === 4 ? 0.5 : 0.85), tilt = 0.4;
-      return [side * (0.06 + a * Math.cos(tilt)), -0.72 + row * 0.1, a * Math.sin(tilt)];
+      // quill: a curved shaft with tapered vanes, nib resting at the end of a curved ink line
+      const m = i % 20, nib = [0.55, 0.5], top = [1.2, -0.7], dx = top[0] - nib[0], dy = top[1] - nib[1], L = Math.hypot(dx, dy), tx = dx / L, ty = dy / L, nx = -ty, ny = tx;
+      const at = (s) => { const b = 0.1 * Math.sin(Math.PI * s); return [nib[0] + dx * s + nx * b, nib[1] + dy * s + ny * b]; };
+      if (m < 2) { const p = at(r()); return [p[0], p[1], 0]; }
+      if (m < 9) { const s = 0.2 + r() * 0.8, w = 0.26 * Math.pow(Math.sin(Math.PI * (s - 0.2) / 0.8), 0.8), side = m % 2 ? 1 : -1, v = r(), p = at(s); return [p[0] + nx * side * w * v + tx * 0.1 * v, p[1] + ny * side * w * v + ty * 0.1 * v, side * v * w * 0.35]; }
+      if (!this.lut) this.buildPen();
+      let u = r(); while (u > this.lut.lift[0] && u < this.lut.lift[1]) u = r();
+      this.wU[i] = u;
+      const pp = this.penAt(u);
+      return [pp[0], pp[1], (r() - 0.5) * 0.02];
     });
     // contact: a Starlink-style constellation (Walker-like shells at 53°) around a dotted Earth
     const PL = 6, KS = 10, INC = 53 * Math.PI / 180, RO = 0.9, RE = 0.55;
@@ -319,6 +328,58 @@ class Component extends DCLogic {
     this.spd = new Float32Array(N); for (let i = 0; i < N; i++) this.spd[i] = 0.035 + r() * 0.06;
     this.N = N;
   }
+  buildPen() {
+    // "hello world" in cursive, as two pen strokes (letter units: baseline y=0, x-height 1, ascenders 2.5)
+    const hello = [[0,0.1],[0.4,1.0],[0.75,2.0],[0.7,2.5],[0.5,2.5],[0.45,2.0],[0.5,1.0],[0.55,0],
+      [0.6,0.6],[0.85,1.0],[1.05,0.9],[1.1,0.5],[1.15,0.05],[1.35,0.1],
+      [1.6,0.5],[1.85,0.85],[1.75,1.0],[1.5,0.8],[1.5,0.3],[1.7,0.0],[1.95,0.15],
+      [2.2,1.0],[2.45,2.0],[2.4,2.5],[2.2,2.4],[2.15,1.8],[2.2,0.8],[2.3,0.05],[2.5,0.15],
+      [2.75,1.0],[3.0,2.0],[2.95,2.5],[2.75,2.4],[2.7,1.8],[2.75,0.8],[2.85,0.05],[3.05,0.15],
+      [3.3,0.7],[3.5,1.0],[3.7,0.8],[3.65,0.2],[3.45,0.0],[3.25,0.3],[3.35,0.9],[3.6,1.0],[3.85,0.95],[4.05,0.9]];
+    const world = [[4.7,0.9],[4.8,0.4],[4.95,0.0],[5.15,0.4],[5.25,1.0],[5.3,0.4],[5.45,0.0],[5.65,0.4],[5.75,1.0],[5.85,0.95],
+      [6.05,0.9],[6.2,1.0],[6.4,0.8],[6.35,0.2],[6.15,0.0],[5.95,0.3],[6.05,0.9],[6.3,1.0],[6.5,0.95],
+      [6.7,0.9],[6.75,1.1],[6.95,0.95],[7.0,0.8],[7.05,0.4],[7.1,0.0],[7.3,0.15],
+      [7.55,1.0],[7.8,2.0],[7.75,2.5],[7.55,2.4],[7.5,1.8],[7.55,0.8],[7.65,0.05],[7.85,0.15],
+      [8.3,0.9],[8.1,1.0],[7.9,0.6],[8.0,0.05],[8.25,0.3],[8.4,1.2],[8.55,2.5],[8.5,1.5],[8.45,0.4],[8.55,0.0],[8.75,0.15]];
+    const cr = (pts, per) => {
+      const out = [], n = pts.length;
+      for (let i = 0; i < n - 1; i++) {
+        const p0 = pts[Math.max(i - 1, 0)], p1 = pts[i], p2 = pts[i + 1], p3 = pts[Math.min(i + 2, n - 1)];
+        for (let k = 0; k < per; k++) {
+          const t = k / per, t2 = t * t, t3 = t2 * t, f = (a, b, c, d) => 0.5 * (2 * b + (-a + c) * t + (2 * a - 5 * b + 4 * c - d) * t2 + (-a + 3 * b - 3 * c + d) * t3);
+          out.push([f(p0[0], p1[0], p2[0], p3[0]), f(p0[1], p1[1], p2[1], p3[1])]);
+        }
+      }
+      out.push(pts[n - 1]); return out;
+    };
+    const a = cr(hello, 12), b = cr(world, 12), raw = a.concat(b);
+    const P = raw.map((q) => [0.55 + (q[0] - 8.75) * 0.2, 0.53 - q[1] * 0.2]);
+    const L = [0]; for (let i = 1; i < P.length; i++) L.push(L[i - 1] + Math.hypot(P[i][0] - P[i - 1][0], P[i][1] - P[i - 1][1]));
+    const T = L[L.length - 1];
+    this.lut = { P, L, T, lift: [L[a.length - 1] / T, L[a.length] / T] };
+  }
+  penAt(u) {
+    if (!this.lut) this.buildPen();
+    const { P, L, T } = this.lut, d = Math.max(0, Math.min(1, u)) * T;
+    let lo = 0, hi = L.length - 1;
+    while (hi - lo > 1) { const mid = (lo + hi) >> 1; if (L[mid] <= d) lo = mid; else hi = mid; }
+    const s = L[hi] > L[lo] ? (d - L[lo]) / (L[hi] - L[lo]) : 0;
+    return [P[lo][0] + (P[hi][0] - P[lo][0]) * s, P[lo][1] + (P[hi][1] - P[lo][1]) * s];
+  }
+  inkFrame(base, out, t) {
+    // pen path of the ink line; the quill's nib rides it while writing
+    const pen = (u) => this.penAt(u);
+    const ease = (x) => x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2;
+    // write once, then stay finished
+    const p = this.reduce ? 1 : ease(Math.max(0, Math.min(1, t / 5.5)));
+    const tip = pen(p), end = pen(1), ox = tip[0] - end[0], oy = tip[1] - end[1], U = this.wU;
+    for (let i = 0; i < U.length; i++) {
+      const j = i * 3;
+      if (U[i] < 0) { out[j] = base[j] + ox; out[j + 1] = base[j + 1] + oy; out[j + 2] = base[j + 2]; }
+      else { const v = pen(Math.min(U[i], p)); out[j] = v[0]; out[j + 1] = v[1]; out[j + 2] = base[j + 2]; }
+    }
+    return out;
+  }
   frame(now) {
     const cv = this.cv; if (!cv || !this.cur) return;
     const w = cv.clientWidth, h = cv.clientHeight; if (!w || !h) return;
@@ -328,11 +389,14 @@ class Component extends DCLogic {
     const ctx = cv.getContext('2d'); if (!ctx) return;
     ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, W, H);
     const t = (now - this.t0) / 1000, dt = Math.min(0.05, (now - this.last) / 1000); this.last = now;
-    const key = this.key, tgt = this.shapes[key] || this.shapes.home, c = this.cur;
+    const key = this.key, c = this.cur;
+    let tgt = this.shapes[key] || this.shapes.home;
+    if (key !== this.prevKey) { this.prevKey = key; this.wT0 = (now - this.t0) / 1000; }
+    if (key === 'writing') { this.wBuf = this.wBuf || new Float32Array(tgt.length); tgt = this.inkFrame(this.shapes.writing, this.wBuf, (now - this.t0) / 1000 - this.wT0); }
     const isHome = key === 'home' || !this.shapes[key], isNet = key === 'about', isSky = key === 'contact';
     const TAU = Math.PI * 2;
     if (this.reduce) this.ry = 0.6;
-    else if (isNet) { const goal = Math.round((this.ry - 0.35) / TAU) * TAU + 0.35 + 0.18 * Math.sin(t * 0.5); this.ry += (goal - this.ry) * 0.04; }
+    else if (isNet || key === 'writing') { const goal = Math.round((this.ry - 0.35) / TAU) * TAU + 0.35 + 0.18 * Math.sin(t * 0.5); this.ry += (goal - this.ry) * 0.04; }
     else this.ry += dt * (isHome ? 0.02 : isSky ? 0.06 : 0.2);
     this.netA += ((isNet ? 1 : 0) - this.netA) * 0.06;
     this.skyA = (this.skyA || 0) + ((isSky ? 1 : 0) - (this.skyA || 0)) * 0.06;

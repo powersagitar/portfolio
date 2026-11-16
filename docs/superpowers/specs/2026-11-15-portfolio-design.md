@@ -36,10 +36,10 @@ adding one is a small, self-contained change.
 1. Home page matching `Main.dc.html` at desktop and phone widths: hero, the six
    accordion rows and their panels, footer, and the dot cloud with all seven
    shapes (home dust, about/neural net, badge/lanyard, how-to/prompt,
-   mssg/stacked pages, writing/open book, contact/Earth + constellation)
+   mssg/stacked pages, writing/quill writing "hello world", contact/Earth + constellation)
    including the two animated overlays (network forward pass; satellite laser
    links with a routed message).
-2. A post page per MDX post matching `Post.dc.html`, with the open-book cloud
+2. A post page per MDX post matching `Post.dc.html`, with the quill cloud
    top-right.
 3. Post bodies moved over **unchanged** in text.
 4. Old URLs keep working: `/blog/YYYY/MM/DD/slug` stays the post URL; `/rss.xml`
@@ -200,7 +200,8 @@ Taken from the design's CSS; treat its values as the spec.
 - "Next" block: the next post in the list (wrapping to the first), shown as
   "n/N" + title + →.
 - Footer as home.
-- Cloud: the writing (open book) shape, 900 points, own canvas top-right
+- Cloud: the writing (quill) shape, 900 points, writing "hello world" once
+  from page load (timed from mount, not selection), own canvas top-right
   (46vw × 620px; phone: full width × 420px at 0.5 opacity), rocking with
   `ry = sin(t·0.3)·0.5`.
 - `generateMetadata` from frontmatter (title, description, canonical URL,
@@ -243,7 +244,7 @@ imported with `ssr: false`) behaviour-matching the design's `frame()`:
   independent: `1 − (1 − k)^(dt·60)`). Home adds per-axis sine drift
   (amplitude 0.18, frequencies 0.12–0.42, random phases).
 - **View**: spin rate per shape (home 0.02 rad/s, contact 0.06, others 0.2;
-  about eases to a fixed angle with a gentle sway), base tilt per shape (about
+  about and writing ease to a fixed angle with a gentle sway), base tilt per shape (about
   −0.08, contact −0.38, others −0.2), pointer parallax (±0.3 ry, ±0.15 rx).
   Layout: shapes centred at 71% width / 50% height (phone: 50% / 36%) at scale
   `min(W·0.58, H)·0.34` (phone `min(W, H·0.72)·0.34`); home dust blends to
@@ -254,6 +255,17 @@ imported with `ssr: false`) behaviour-matching the design's `frame()`:
   (alpha 0.16), the routed ground→hops→ground path (alpha 0.7) and the moving
   message dot — with Earth occlusion (anything behind the globe's disc is
   hidden) as in the design.
+- **Animated target (writing / quill)**: the target itself changes over time.
+  Points split by index (`i % 20`): 0–1 the quill's curved shaft, 2–8 its
+  tapered vanes, 9–19 ink on a cursive "hello world" path (Catmull-Rom
+  through the design's control points, two strokes, arc-length LUT; ink
+  points never sample the pen lift between the words). Each ink point keeps
+  its arc-length parameter `u`. On selection, progress
+  `p = easeInOutQuad(clamp(t/5.5))` from the moment the key became
+  `writing`; ink point sits at `pen(min(u, p))` (bunched at the nib until
+  written), the quill is translated so its nib rides `pen(p)`. It writes once
+  and stays finished; re-selecting restarts it. Reduced motion: `p = 1`.
+  Port `buildPen`, `penAt` and `inkFrame` exactly.
 - **Selection**: home passes the active key from the accordion: hover/focus of
   a row sets it; leaving the list reverts to the open row, else `home`.
   Clicking toggles open and sets the key.
@@ -262,8 +274,10 @@ imported with `ssr: false`) behaviour-matching the design's `frame()`:
 - **Cloud modules**: each shape is one file in `src/components/dot-cloud/shapes/`
   exporting a definition with: `id`; `build(n, rng) → Float32Array` (xyz per
   point, deterministic given the seeded `rng`); optional `view` overrides
-  (spin, tilt, sway); optional `overlay` (a factory returning three.js
-  objects and a per-frame `update`). A registry maps row ids to shapes; adding
+  (spin, tilt, sway); optional `animate(base, out, tSinceSelected, reduce)`
+  for shapes whose target moves (writing), with any per-point data it needs
+  (e.g. ink `u`) produced by `build`; optional `overlay` (a factory returning
+  three.js objects and a per-frame `update`). A registry maps row ids to shapes; adding
   a cloud = one shape file + one registry line + one row. Shape builders are
   pure and have `bun test` unit tests (length, bounds, determinism).
 
@@ -281,7 +295,8 @@ Written for someone adding the next project's cloud. Covers:
 3. **Sampling recipes** with the design's examples: uniform volume (home
    dust, badge board), surface (Fibonacci sphere for Earth), ball clusters
    (`cbrt` radius for neural-net nodes), line segments with jitter (prompt,
-   lanyard, edges), layered planes (mssg pages), parametric curves (orbits).
+   lanyard, edges), layered planes (mssg pages), parametric curves (orbits),
+   splines with an arc-length table (the quill's ink path).
 4. **Silhouette first**: a cloud must read as its subject at a glance, mostly
    from its 2D outline; thin depth (z jitter) adds volume without blurring the
    silhouette; test it rotating, at phone size and with reduced motion
@@ -290,7 +305,9 @@ Written for someone adding the next project's cloud. Covers:
    near-uniform density matters more than point count.
 6. **Motion and meaning**: when to add an overlay (structure that points
    can't show: edges, links, signals), keeping overlays sparse and faint, and
-   making them respect reduced motion and occlusion.
+   making them respect reduced motion and occlusion; and animated targets
+   (the quill writing), where points carry a parameter along a path and the
+   target is recomputed per frame from time-since-selected.
 7. **Determinism and performance**: seeded rng, build once, no per-frame
    allocation.
 8. **Checklist** to add a cloud: shape file, registry entry, row, test,
