@@ -1,0 +1,6 @@
+docs/superpowers/
+docs/superpowers/specs/*-design-source/
+.claude/
+.superpowers/
+.next/
+bun.lock
