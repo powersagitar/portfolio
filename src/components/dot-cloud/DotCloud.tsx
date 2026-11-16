@@ -26,8 +26,10 @@ export default function DotCloud(props: DotCloudProps) {
     const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
     const renderer = createRenderer(canvas);
     if (!renderer) return;
-    const homeSim = variant === 'home' ? createHomeSim({ reduce }) : null;
-    const postSim = variant === 'post' ? createPostSim({ reduce }) : null;
+    const sim =
+      variant === 'home'
+        ? createHomeSim({ reduce })
+        : createPostSim({ reduce });
 
     // One input object, mutated in place every frame.
     const input: HomeInput = {
@@ -41,8 +43,11 @@ export default function DotCloud(props: DotCloudProps) {
       phone: false,
     };
 
-    // ResizeObserver misses DPR-only changes (moving to another monitor),
-    // so the frame loop also re-runs the resize when devicePixelRatio moves.
+    // Resizing clears the canvas, so it only happens inside a frame, right
+    // before a draw: the ResizeObserver marks it dirty, and the frame also
+    // checks devicePixelRatio (ResizeObserver misses DPR-only changes, e.g.
+    // moving to another monitor).
+    let dirty = true;
     let lastDpr = 0;
     const resize = () => {
       lastDpr = window.devicePixelRatio;
@@ -52,9 +57,11 @@ export default function DotCloud(props: DotCloudProps) {
       input.H = Math.max(1, Math.round(canvas.clientHeight * dpr));
       input.phone = isPhone(canvas.clientWidth);
       renderer.resize(input.W, input.H);
+      dirty = false;
     };
-    resize();
-    const observer = new ResizeObserver(resize);
+    const observer = new ResizeObserver(() => {
+      dirty = true;
+    });
     observer.observe(canvas);
 
     const onPointerMove = (e: PointerEvent) => {
@@ -64,17 +71,23 @@ export default function DotCloud(props: DotCloudProps) {
     window.addEventListener('pointermove', onPointerMove, { passive: true });
 
     let raf = 0;
+    // Set on context loss or any error: the cloud stays blank for good
+    // rather than throwing every frame.
+    let dead = false;
     const frame = (now: number) => {
-      raf = requestAnimationFrame(frame);
-      if (window.devicePixelRatio !== lastDpr) resize();
-      input.now = now;
-      if (homeSim) {
+      raf = 0;
+      try {
+        if (dirty || window.devicePixelRatio !== lastDpr) resize();
+        input.now = now;
         input.key = keyRef.current;
-        renderer.draw(homeSim.step(input));
-      } else if (postSim) renderer.draw(postSim.step(input));
+        if (renderer.draw(sim.step(input))) raf = requestAnimationFrame(frame);
+        else dead = true;
+      } catch {
+        dead = true;
+      }
     };
     const start = () => {
-      if (!raf) raf = requestAnimationFrame(frame);
+      if (!raf && !dead) raf = requestAnimationFrame(frame);
     };
     const stop = () => {
       cancelAnimationFrame(raf);

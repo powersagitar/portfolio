@@ -3,6 +3,7 @@ import {
   BufferGeometry,
   Color,
   type InterleavedBufferAttribute,
+  LinearSRGBColorSpace,
   NormalBlending,
   OrthographicCamera,
   Points,
@@ -19,7 +20,8 @@ import type { DotBatch, LineBatch } from './types';
 
 export type CloudRenderer = {
   resize(W: number, H: number): void;
-  draw(f: SimFrame): void;
+  /** Returns false once the context is lost; the caller should stop. */
+  draw(f: SimFrame): boolean;
   dispose(): void;
 };
 
@@ -178,13 +180,12 @@ export function createRenderer(
   const attrs: WebGLContextAttributes = {
     alpha: true,
     antialias: false,
-    premultipliedAlpha: false,
   };
   let lost = false;
-  // Registered before three's own listener, so it can keep three's
-  // "Context Lost" log quiet; restoring the context is not supported.
+  // Registered before three's own listener and stops it, keeping three's
+  // "Context Lost" log quiet. No preventDefault: without it the browser never
+  // restores the context, so three's restore path (and its log) never runs.
   const onLost = (e: Event) => {
-    e.preventDefault();
     e.stopImmediatePropagation();
     lost = true;
   };
@@ -208,7 +209,12 @@ export function createRenderer(
   const scene = new Scene();
   const camera = new OrthographicCamera(0, 1, 0, 1, -1, 1);
   const material = new ShaderMaterial({
-    uniforms: { color: { value: new Color(INK) } },
+    // The raw shader writes this straight to the sRGB canvas (no
+    // colorspace_fragment), so keep the hex bytes as-is rather than letting
+    // Color convert them to linear.
+    uniforms: {
+      color: { value: new Color().setHex(INK, LinearSRGBColorSpace) },
+    },
     vertexShader,
     fragmentShader,
     transparent: true,
@@ -233,7 +239,7 @@ export function createRenderer(
       for (const l of lines) l.mesh.material.resolution.set(W, H);
     },
     draw(f) {
-      if (lost) return;
+      if (lost) return false;
       dots.begin(f.dots.count);
       dots.push(f.dots);
       dots.end();
@@ -260,6 +266,7 @@ export function createRenderer(
       for (; slot < lines.length; slot++) lines[slot].mesh.visible = false;
 
       gl.render(scene, camera);
+      return true;
     },
     dispose() {
       canvas.removeEventListener('webglcontextlost', onLost);
