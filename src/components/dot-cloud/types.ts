@@ -1,5 +1,7 @@
-export type CloudKey =
-  'home' | 'about' | 'badge' | 'howto' | 'mssg' | 'writing' | 'contact';
+import type { SectionId } from '@/lib/sections';
+
+/** `home` (nothing open) plus one key per section in `SECTIONS`. */
+export type CloudKey = 'home' | SectionId;
 
 export type Rng = () => number;
 

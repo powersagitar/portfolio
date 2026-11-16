@@ -1,5 +1,7 @@
 import { describe, expect, test } from 'bun:test';
 
+import { SECTIONS } from '@/lib/sections';
+
 import { SHAPES } from '../registry';
 import { mulberry32 } from '../rng';
 import type { CloudKey } from '../types';
@@ -109,15 +111,7 @@ test('views and tilts', () => {
   );
 });
 
-test('registry has all 7 keys', () => {
-  const keys: CloudKey[] = [
-    'home',
-    'about',
-    'badge',
-    'howto',
-    'mssg',
-    'writing',
-    'contact',
-  ];
+test('registry has home plus every section', () => {
+  const keys: CloudKey[] = ['home', ...SECTIONS.map((s) => s.id)];
   expect(Object.keys(SHAPES).sort()).toEqual([...keys].sort());
 });

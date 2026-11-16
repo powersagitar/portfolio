@@ -27,11 +27,14 @@ Personal portfolio and blog (Next.js 16, App Router, Tailwind, Bun). Read
   `src/mdx-components.tsx`. The post route uses `dynamicParams = false`.
 - Routes: `/` (home index + dot cloud), the post pages, `/rss.xml`
   (`src/app/rss.xml/route.tsx`), `/sitemap.xml`, `/robots.txt`, `/icon`, and a
-  `/blog` redirect (308) to `/#writing`. All static. Opening the Writing row
-  sets the URL hash to `#writing` (`history.replaceState`) and closing it or
-  opening another row clears it, so Back from a post reopens Writing.
-- Home: `src/components/home/` (`Hero`, `HomeClient`, `IndexList` rows with
-  `panels/`). `IndexList` reports the active `CloudKey` to the cloud.
+  `/blog` redirect (308) to `/#writing`. All static. The URL hash is the open
+  row: `/#<row-id>` loads with that row open (and `hashchange` follows it),
+  opening a row sets the hash (`history.replaceState`, no history entry) and
+  closing it clears it, so rows are linkable and Back from a post reopens
+  Writing.
+- Home: `src/components/home/` (`Hero`, `HomeClient`, `IndexList` rows from
+  `SECTIONS` with `panels/`). `IndexList` reports the active `CloudKey` to the
+  cloud.
 - Dot cloud: `src/components/dot-cloud/`, layered as pure data to pure sim to
   thin renderer. `shapes/*.ts` and `overlays/*.ts` build points and overlay
   frames; `simulation.ts` steps time into batches; `renderer.ts` (three.js) only
@@ -42,8 +45,10 @@ Personal portfolio and blog (Next.js 16, App Router, Tailwind, Bun). Read
 
 - The `Callout` stub in `src/app/rss.xml/route.tsx` must match `Callout` in
   `src/mdx-components.tsx` (the feed renders posts without the site's styles).
-- The `CloudKey` union (`dot-cloud/types.ts`), `SHAPES`
-  (`dot-cloud/registry.ts`) and the `IndexList` rows must list the same ids.
+- Home rows are `SECTIONS` in `src/lib/sections.ts` (order, title, meta).
+  `CloudKey` derives from it; `SHAPES` and `IndexList`'s `extras` are `Record`s
+  over its ids, so TypeScript enforces they match. Row numbers, the hero's
+  count, the post page's `05 Writing` label and the URL hash derive from it too.
 
 ## Gotchas
 

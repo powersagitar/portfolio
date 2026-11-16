@@ -15,6 +15,12 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
+import {
+  SECTIONS,
+  type SectionId,
+  pad2,
+  sectionFromHash,
+} from '@/lib/sections';
 
 import { About } from './panels/About';
 import { Badge } from './panels/Badge';
@@ -23,20 +29,14 @@ import { HowTo } from './panels/HowTo';
 import { Mssg } from './panels/Mssg';
 import { Writing, type WritingPost } from './panels/Writing';
 
-type RowId = Exclude<CloudKey, 'home'>;
-
 type IndexListProps = {
   posts: WritingPost[];
   onCloudKey?: (key: CloudKey) => void;
 };
 
-type Row = {
-  id: RowId;
-  n: string;
-  title: ReactNode;
-  meta: string;
-  panel: ReactNode;
-};
+// Per-row content. `Record<SectionId, …>` makes TypeScript fail if a section
+// in `SECTIONS` has no panel, or a panel has no section.
+type RowExtra = { panel: ReactNode; sup?: ReactNode };
 
 const SCROLL_KEY = 'index-scroll';
 let poppedBack = false;
@@ -47,7 +47,7 @@ if (typeof window !== 'undefined') {
 }
 
 export function IndexList({ posts, onCloudKey }: IndexListProps) {
-  const [open, setOpen] = useState<RowId | null>(null);
+  const [open, setOpen] = useState<SectionId | null>(null);
   const [instant, setInstant] = useState(false);
   const keyRef = useRef<CloudKey>('home');
 
@@ -61,12 +61,18 @@ export function IndexList({ posts, onCloudKey }: IndexListProps) {
   );
 
   useEffect(() => {
+    // The URL hash is the source of truth for which row is open: on load and
+    // on every hashchange (in-page links, manual edits) the row follows it.
     const openFromHash = (e?: Event) => {
-      if (window.location.hash !== '#writing') return;
-      setOpen('writing');
-      setKey('writing');
-      // Back from a post restores the scroll saved when a link was clicked;
-      // any other arrival scrolls Writing into view.
+      const id = sectionFromHash(window.location.hash);
+      setOpen(id);
+      if (!id) {
+        if (e) setKey('home');
+        return;
+      }
+      setKey(id);
+      // Back from a link restores the scroll saved when a link was clicked;
+      // any other arrival scrolls the row into view.
       let saved: string | null = null;
       try {
         saved = sessionStorage.getItem(SCROLL_KEY);
@@ -85,7 +91,7 @@ export function IndexList({ posts, onCloudKey }: IndexListProps) {
           }),
         );
       } else {
-        document.getElementById('writing')?.scrollIntoView();
+        document.getElementById(id)?.scrollIntoView();
       }
       poppedBack = false;
     };
@@ -94,61 +100,28 @@ export function IndexList({ posts, onCloudKey }: IndexListProps) {
     return () => window.removeEventListener('hashchange', openFromHash);
   }, [setKey]);
 
-  const rows: Row[] = [
-    { id: 'about', n: '01', title: 'About', meta: 'Person', panel: <About /> },
-    {
-      id: 'badge',
-      n: '02',
-      title: 'Hack the Badge',
-      meta: 'Project · Rust',
-      panel: <Badge />,
-    },
-    {
-      id: 'howto',
-      n: '03',
-      title: 'how-to',
-      meta: 'Project · Shell',
-      panel: <HowTo />,
-    },
-    {
-      id: 'mssg',
-      n: '04',
-      title: 'mssg',
-      meta: 'Project · TypeScript',
-      panel: <Mssg />,
-    },
-    {
-      id: 'writing',
-      n: '05',
-      title: (
-        <>
-          Writing<sup className="mono">{posts.length}</sup>
-        </>
-      ),
-      meta: 'Posts',
-      panel: <Writing posts={posts} />,
-    },
-    {
-      id: 'contact',
-      n: '06',
-      title: 'Contact',
-      meta: 'Elsewhere',
-      panel: <Contact />,
-    },
-  ];
+  const extras: Record<SectionId, RowExtra> = {
+    about: { panel: <About /> },
+    badge: { panel: <Badge /> },
+    howto: { panel: <HowTo /> },
+    mssg: { panel: <Mssg /> },
+    writing: { panel: <Writing posts={posts} />, sup: posts.length },
+    contact: { panel: <Contact /> },
+  };
 
   const toggle = (value: string) => {
-    const next = (value || null) as RowId | null;
+    const next = (value || null) as SectionId | null;
     // Closing reports the row that was open; opening reports the new row.
     setKey(next ?? open ?? 'home');
     setOpen(next);
-    // Keep Writing's open state in the URL so Back from a post restores it.
-    const { pathname, search, hash } = window.location;
-    if (next === 'writing') {
-      history.replaceState(history.state, '', `${pathname}${search}#writing`);
-    } else if (hash === '#writing') {
-      history.replaceState(history.state, '', `${pathname}${search}`);
-    }
+    // Mirror the open row in the URL so it can be linked to and Back from a
+    // post restores it. replaceState: no history entry per toggle, no jump.
+    const { pathname, search } = window.location;
+    history.replaceState(
+      history.state,
+      '',
+      `${pathname}${search}${next ? `#${next}` : ''}`,
+    );
   };
 
   return (
@@ -170,18 +143,25 @@ export function IndexList({ posts, onCloudKey }: IndexListProps) {
         }}
         onMouseLeave={() => setKey(open ?? 'home')}
       >
-        {rows.map((row) => (
+        {SECTIONS.map((row, i) => (
           <AccordionItem key={row.id} value={row.id} asChild>
             <li id={row.id}>
               <AccordionTrigger
                 onPointerEnter={() => setKey(row.id)}
                 onFocus={() => setKey(row.id)}
               >
-                <span className="n mono">{row.n}</span>
-                <span className="t">{row.title}</span>
+                <span className="n mono">{pad2(i + 1)}</span>
+                <span className="t">
+                  {row.title}
+                  {extras[row.id].sup !== undefined && (
+                    <sup className="mono">{extras[row.id].sup}</sup>
+                  )}
+                </span>
                 <span className="m mono">{row.meta}</span>
               </AccordionTrigger>
-              <AccordionContent forceMount>{row.panel}</AccordionContent>
+              <AccordionContent forceMount>
+                {extras[row.id].panel}
+              </AccordionContent>
             </li>
           </AccordionItem>
         ))}

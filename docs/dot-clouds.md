@@ -167,17 +167,18 @@ shape again resets `tSinceSelected`, so it writes again from the start.
 1. Create `shapes/<id>.ts` exporting a `ShapeDef` (`id`, `build`, `view`,
    `tilt`, optionally `animate` and `overlay`). Use `make`. Reference the design
    source line in a comment as the others do.
-2. Add the id to the `CloudKey` union in `types.ts` and an entry to `SHAPES` in
-   `registry.ts`. The `Record<CloudKey, ShapeDef>` type makes TypeScript fail if
-   either is missing.
-3. Add an `IndexList` row in `src/components/home/IndexList.tsx` with its panel
-   in `src/components/home/panels/`. Its `id` is the `CloudKey`; hovering or
-   focusing the row selects the cloud.
+2. Add the section (`id`, `title`, `meta`) to `SECTIONS` in
+   `src/lib/sections.ts`, in display order. `CloudKey` derives from it, and
+   TypeScript then fails until `SHAPES` in `registry.ts` and the `extras` record
+   in `src/components/home/IndexList.tsx` both have the id.
+3. Add the entry to `SHAPES`, and the panel (in `src/components/home/panels/`)
+   to `IndexList`'s `extras`. Row numbers, the hero's count and the `#<id>` hash
+   follow automatically; hovering or focusing the row selects the cloud.
 4. Add tests to `shapes/shapes.test.ts`: add your shape to the array in the
    "every shape" loop, which checks size, finiteness and determinism (it does
    not include `writing`, which `writing.test.ts` covers, so nothing is added
    automatically); add a case for your shape's own structure (bounds, index
-   split) and update the "registry has all N keys" and "views and tilts" tests.
+   split) and update the "views and tilts" test.
 5. Add a line to the catalogue below.
 
 ## Catalogue

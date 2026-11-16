@@ -4,6 +4,7 @@ import { useRef } from 'react';
 
 import { MetaRow } from '@/components/site/MetaRow';
 import { useOpticalAlign } from '@/hooks/use-optical-align';
+import { SECTIONS, pad2 } from '@/lib/sections';
 
 export function Hero() {
   const nameRef = useRef<HTMLHeadingElement>(null);
@@ -15,7 +16,10 @@ export function Hero() {
       className="relative z-1 box-border flex min-h-screen flex-col justify-between px-[clamp(20px,4vw,64px)] pt-10 pb-12 max-[700px]:min-h-[88vh] max-[700px]:px-5 max-[700px]:pt-6 max-[700px]:pb-8"
       aria-label="Introduction"
     >
-      <MetaRow left="Index — 06" right="mohandong.com" />
+      <MetaRow
+        left={`Index — ${pad2(SECTIONS.length)}`}
+        right="mohandong.com"
+      />
       <div className="flex flex-col gap-10">
         <h1 ref={nameRef} className="name" style={{ marginLeft }}>
           Mohan

@@ -579,7 +579,7 @@
     }
   }
 
-  /* Back from a post reopens Writing at once, so the saved scroll position
+  /* Back from a link reopens its row at once, so the saved scroll position
      exists when it is restored (see IndexList). */
   .idx[data-instant] .panel,
   .idx[data-instant] .panel > div,
