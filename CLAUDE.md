@@ -19,6 +19,46 @@ Personal portfolio and blog (Next.js 16, App Router, Tailwind, Bun). Read
 - Nothing in `content/` imports from `src/`.
 - Filesystem access only in `server-only` modules under `src/lib/`.
 
+## Architecture
+
+- Content pipeline: `content/blog/YYYY/MM/DD/slug.mdx` (frontmatter + MDX).
+  `src/lib/posts.ts` (`server-only`) reads and indexes them with `gray-matter`;
+  `src/app/blog/[yyyy]/[mm]/[dd]/[slug]` renders each through `@next/mdx` with
+  `src/mdx-components.tsx`. The post route uses `dynamicParams = false`.
+- Routes: `/` (home index + dot cloud), the post pages, `/rss.xml`
+  (`src/app/rss.xml/route.tsx`), `/sitemap.xml`, `/robots.txt`, `/icon`, and a
+  `/blog` redirect. All static.
+- Home: `src/components/home/` (`Hero`, `HomeClient`, `IndexList` rows with
+  `panels/`). `IndexList` reports the active `CloudKey` to the cloud.
+- Dot cloud: `src/components/dot-cloud/`, layered as pure data to pure sim to
+  thin renderer. `shapes/*.ts` and `overlays/*.ts` build points and overlay
+  frames; `simulation.ts` steps time into batches; `renderer.ts` (three.js) only
+  draws them; `DotCloud.tsx` wires it to the page and survives having no WebGL.
+  Read `docs/dot-clouds.md` before adding or changing a cloud.
+
+## Keep in sync
+
+- The `Callout` stub in `src/app/rss.xml/route.tsx` must match `Callout` in
+  `src/mdx-components.tsx` (the feed renders posts without the site's styles).
+- The `CloudKey` union (`dot-cloud/types.ts`), `SHAPES`
+  (`dot-cloud/registry.ts`) and the `IndexList` rows must list the same ids.
+
+## Gotchas
+
+- `next.config.ts` has no `cacheComponents` or `partialPrefetching`: classic
+  static generation. Do not add them.
+- `content/blog/` is in `.prettierignore` (Prettier would reflow post prose). So
+  are `docs/superpowers/`, `.claude/` and `.superpowers/`.
+- Tests importing `server-only` modules rely on the bun test preload in
+  `bunfig.toml` (`src/test/setup.ts` mocks `server-only`).
+- Prettier scripts run `bunx --bun prettier`.
+- The renderer keeps three's default `premultipliedAlpha`; do not change it
+  without checking dim dots on the black page.
+- `posts.ts` marks its `process.cwd()` path `/* turbopackIgnore: true */` to
+  avoid tracing the whole project.
+- Locally, `/_vercel/insights/script.js` 404s under `bun run start`; that is
+  expected off Vercel.
+
 ## Rules
 
 - Bun only: `bun`, `bunx`, `bun --bun ...`. Never npm, npx, pnpm, yarn or node.
