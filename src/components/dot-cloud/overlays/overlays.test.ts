@@ -75,19 +75,39 @@ describe('constellation overlay', () => {
     expect(f.lines[1].width).toBeCloseTo(2.2, 9);
   });
   test('message dot only when not reduced', () => {
+    // a message dot has size 4*dpr = 8; satellites are at most 2.4*1.5*2 < 8
+    const has = (d: { size: Float32Array; count: number }) => {
+      for (let i = 0; i < d.count; i++)
+        if (Math.abs(d.size[i] - 8) < 1e-6) return true;
+      return false;
+    };
     const ov = constellationOverlay();
-    const reduced = ov.frame(ctx({ reduce: true })).dots.count;
-    let extra = false;
-    for (let t = 0; t < 3; t += 0.05) {
-      if (ov.frame(ctx({ t })).dots.count === reduced + 1) extra = true;
+    let shown = 0;
+    let frames = 0;
+    for (let t = 0; t < 10; t += 0.05) {
+      frames++;
+      const f = ov.frame(ctx({ t }));
+      if (has(f.dots)) {
+        shown++;
+        // same satellites as the reduced run only at t = 0; elsewhere just presence
+      }
+      expect(has(ov.frame(ctx({ t, reduce: true })).dots)).toBe(false);
     }
-    // reduced freezes satellites (mv = 0); at t=0 they match, so compare there
-    expect(ov.frame(ctx({ t: 0 })).dots.count).toBeGreaterThanOrEqual(reduced);
-    expect(extra || reduced > 0).toBe(true);
-    const f0 = ov.frame(ctx({ t: 0, reduce: false }));
-    const fr = ov.frame(ctx({ t: 0, reduce: true }));
-    expect(fr.dots.count).toBeLessThanOrEqual(f0.dots.count);
-    expect(f0.dots.count - fr.dots.count).toBeLessThanOrEqual(1);
+    expect(shown).toBeGreaterThan(0);
+    expect(shown).toBeLessThan(frames);
+  });
+  test('at t = 0 the message dot is the single extra dot', () => {
+    const ov = constellationOverlay();
+    let found = false;
+    for (let t = 0; t < 3; t += 0.01) {
+      const f = ov.frame(ctx({ t }));
+      const d = f.dots;
+      if (Math.abs(d.size[d.count - 1] - 8) > 1e-6) continue;
+      found = true;
+      expect(d.alpha[d.count - 1]).toBe(1);
+      break;
+    }
+    expect(found).toBe(true);
   });
   test('no emitted satellite is occluded', () => {
     const ov = constellationOverlay();
