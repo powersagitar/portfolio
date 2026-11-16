@@ -141,6 +141,7 @@
   color: #d1d1d6;
 }
 .post-body h2 {
+  font-weight: 700;
   margin: 56px 0 16px;
   font-size: 30px;
   line-height: 1.2;
@@ -161,6 +162,12 @@
   margin: 0 0 22px;
   padding-left: 1.25em;
 }
+.post-body ul {
+  list-style: disc;
+}
+.post-body ol {
+  list-style: decimal;
+}
 .post-body li {
   margin: 0 0 8px;
 }
@@ -171,6 +178,17 @@
 }
 .post-body em {
   font-style: italic;
+}
+.post-body h2 a,
+.post-body h3 a {
+  color: inherit;
+  text-decoration: none;
+}
+.post-body aside > :last-child {
+  margin-bottom: 0;
+}
+.post-body .callout-label {
+  margin: 0 0 8px;
 }
 .post-body blockquote {
   margin: 28px 0;
