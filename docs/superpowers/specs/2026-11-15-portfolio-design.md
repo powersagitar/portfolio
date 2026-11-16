@@ -1,6 +1,6 @@
 # Portfolio rebuild — design
 
-Date: 2026-11-15 · Status: draft for approval (rev. 2)
+Date: 2026-11-15 · Status: approved
 
 ## Intent
 
@@ -112,6 +112,7 @@ adding one is a small, self-contained change.
   open on their own pages.
 - shadcn style need not match mssg's; use whatever fits this design best.
 - Implementation via subagent-driven development.
+- Callouts are `<Callout>` JSX in the posts, not directives.
 - Content lives in top-level `content/`, decoupled from `src/`.
 - Scope ends at a site that builds, lints, tests and runs locally with
   `bun`; deployment and the domain switch are the user's and out of scope
@@ -211,16 +212,15 @@ Taken from the design's CSS; treat its values as the spec.
 
 - `@next/mdx` with `pageExtensions` including `mdx`, configured for Turbopack.
   Plugins: `remark-frontmatter` + a frontmatter export (e.g.
-  `remark-mdx-frontmatter`), `remark-gfm`, `remark-directive`,
+  `remark-mdx-frontmatter`), `remark-gfm`,
   `rehype-slug`, `rehype-autolink-headings`, `rehype-pretty-code` (a dark Shiki
   theme whose background is overridden to the design's `#0d0d0d`/`#1d1d1f`
   code block), `rehype-external-links`. Drop math (no post uses it).
-- Two posts use `:::callout{type=note}` blocks. Render them with a `Callout`
-  component in the design's language. Preferred: keep the directive syntax and
-  map it to the component with a small local remark plugin. If a local plugin
-  cannot be referenced under Turbopack, convert those two blocks to
-  `<Callout type="note">…</Callout>` JSX — the only permitted change to the
-  post files, and the prose inside stays byte-identical.
+- Two posts use `:::callout{type=note}` blocks. Convert them to
+  `<Callout type="note">…</Callout>` JSX (user's decision, for flexibility) —
+  the only permitted change to the post files; the prose inside stays
+  byte-identical. `Callout` is styled in the design's language. No
+  `remark-directive` and no directive plugin.
 - `src/mdx-components.tsx` maps HTML elements and `Callout`.
 
 ### Dot cloud engine (three.js)
