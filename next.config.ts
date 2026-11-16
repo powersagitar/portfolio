@@ -31,7 +31,17 @@ const withMDX = createMDX({
     remarkPlugins: ['remark-frontmatter', 'remark-gfm'],
     rehypePlugins: [
       'rehype-slug',
-      ['rehype-autolink-headings', { behavior: 'wrap' }],
+      [
+        'rehype-autolink-headings',
+        {
+          behavior: 'append',
+          properties: {
+            className: ['anc', 'mono'],
+            ariaLabel: 'Link to this section',
+          },
+          content: { type: 'text', value: '#' },
+        },
+      ],
       [
         'rehype-pretty-code',
         { theme: 'github-dark-default', keepBackground: false },
