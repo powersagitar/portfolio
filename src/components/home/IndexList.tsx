@@ -78,15 +78,18 @@ export function IndexList({ posts, onCloudKey }: IndexListProps) {
         saved = sessionStorage.getItem(SCROLL_KEY);
         sessionStorage.removeItem(SCROLL_KEY);
       } catch {}
-      if (!e && poppedBack && saved !== null) {
-        // Open without the panel transition so the page is already tall
-        // enough for the saved position. Next scrolls to the hash target
-        // after mount, so restore after that, then re-enable transitions.
-        const y = Number(saved);
+      if (!e) {
+        // Arriving on the page: open without the panel transition so the
+        // page is already tall enough to scroll to. Scrolling earlier gets
+        // clamped by the still-collapsed panel. Next scrolls to the hash
+        // target after mount, so scroll after that, then re-enable
+        // transitions.
+        const restore = poppedBack && saved !== null ? Number(saved) : null;
         setInstant(true);
         requestAnimationFrame(() =>
           requestAnimationFrame(() => {
-            window.scrollTo(0, y);
+            if (restore !== null) window.scrollTo(0, restore);
+            else document.getElementById(id)?.scrollIntoView();
             setInstant(false);
           }),
         );
