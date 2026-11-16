@@ -14,10 +14,13 @@ page. You almost never touch the last two when adding a cloud.
 ## 1. Unit space
 
 Shapes live in a box of roughly x ±1.5, y ±1.05, z ±1. **+y is down**, as on a
-screen: a quill tip at the bottom has a positive y. Keep every shape within ±0.9
-so it survives rotation (`ry` swings up to ±0.5 rad, plus mouse parallax) and
-perspective without leaving the frame. `home.ts` is the one exception: dust
-fills the whole box on purpose.
+screen: a quill tip at the bottom has a positive y. As a guideline, keep a shape
+within about ±0.9 so it survives rotation (home spins continuously, the post sim
+swings `ry` by ±0.5 rad, and the mouse adds parallax) and perspective without
+leaving the frame. Several shapes deliberately exceed it: `home.ts` dust fills
+the whole box, `about.ts` nodes span x ±1.1, the quill in `writing.ts` reaches
+(1.2, -0.7), and `badge.ts` runs from y 1.08 (board bottom) to -1.3 (lanyard
+top). Check any such shape at phone size and while rotating.
 
 `math.ts` maps unit space to pixels (`projectInto`, `makeProjector`). With yaw
 `ry` and pitch `rx`:
@@ -72,9 +75,10 @@ All use the `Rng` (`() => number` in [0, 1)) passed to `build`, never
   (`u = r()*2-1`, `th = r()*TAU`, `q = sqrt(1-u*u)`) times radius
   `rad * cbrt(r())`. The cube root makes density uniform through the ball;
   without it points pile up at the centre.
-- **Line segments with jitter** (`howto.ts` prompt, badge lanyard, network
-  edges): `A + (B - A) * r()`, plus a small `(r() - 0.5) * 0.08` perpendicular
-  wobble and some z thickness so the stroke has body.
+- **Line segments** (`howto.ts` prompt, badge lanyard, network edges):
+  `A + (B - A) * r()`. Jitter is optional: only `howto.ts` adds it, a small
+  `(r() - 0.5) * 0.08` wobble plus z thickness so the stroke has body. The
+  lanyard and the network edges are pure lerps.
 - **Layered planes** (`mssg.ts`): `i % 4` picks a slab, each a uniform rectangle
   offset in x, y and z by its layer index.
 - **Parametric curves** (orbits in `contact.ts`): `orbit(plane, u)` returns a
@@ -141,7 +145,7 @@ it writes again from the start.
 
 - Seeded `rng`: `mulberry32(seed)` in `rng.ts`, seeded with `DEFAULT_SEED`.
   Never use `Math.random` in a shape; the same seed must give the same cloud
-  (`shapes.test.ts` checks every shape twice).
+  (`shapes.test.ts` builds each shape twice with the same seed).
 - Build once: `createHomeSim` calls every `build` up front. `animate` and the
   overlay `frame` functions run every frame, so keep them cheap.
 - No per-point allocation per frame: write into the buffers passed in (`out`,
@@ -163,10 +167,11 @@ it writes again from the start.
 3. Add an `IndexList` row in `src/components/home/IndexList.tsx` with its panel
    in `src/components/home/panels/`. Its `id` is the `CloudKey`; hovering or
    focusing the row selects the cloud.
-4. Add tests to `shapes/shapes.test.ts`: the "every shape" loop covers size,
-   finiteness and determinism for free; add a case for your shape's own
-   structure (bounds, index split) and update the "registry has all N keys" and
-   "views and tilts" tests.
+4. Add tests to `shapes/shapes.test.ts`: add your shape to the array in the
+   "every shape" loop, which checks size, finiteness and determinism (it does
+   not include `writing`, which `writing.test.ts` covers, so nothing is added
+   automatically); add a case for your shape's own structure (bounds, index
+   split) and update the "registry has all N keys" and "views and tilts" tests.
 5. Add a line to the catalogue below.
 
 ## Catalogue
