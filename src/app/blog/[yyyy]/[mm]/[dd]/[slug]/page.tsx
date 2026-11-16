@@ -11,6 +11,8 @@ import { getPost, getPosts } from '@/lib/posts';
 
 type Params = { yyyy: string; mm: string; dd: string; slug: string };
 
+export const dynamicParams = false;
+
 export function generateStaticParams(): Params[] {
   return getPosts().map(({ yyyy, mm, dd, slug }) => ({ yyyy, mm, dd, slug }));
 }

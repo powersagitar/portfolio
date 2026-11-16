@@ -43,7 +43,10 @@ function readPost(file: string, params: PostParams): Post {
 }
 
 export function getPosts(
-  dir: string = path.join(process.cwd(), 'content/blog'),
+  dir: string = path.join(
+    /* turbopackIgnore: true */ process.cwd(),
+    'content/blog',
+  ),
 ): Post[] {
   const cached = cache.get(dir);
   if (cached) return cached;

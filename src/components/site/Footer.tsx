@@ -1,5 +1,4 @@
-export async function Footer() {
-  'use cache';
+export function Footer() {
   const buildYear = new Date().getFullYear();
   return (
     <footer className="mono flex flex-wrap justify-between gap-4 pt-24 text-[13px] tracking-[.04em] text-[#86868b]">
