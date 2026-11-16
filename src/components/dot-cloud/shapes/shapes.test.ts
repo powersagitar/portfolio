@@ -4,7 +4,7 @@ import { SECTIONS } from '@/lib/sections';
 
 import { SHAPES } from '../registry';
 import { mulberry32 } from '../rng';
-import type { CloudKey } from '../types';
+import type { CloudKey, ShapeBuild, ShapeDef } from '../types';
 import { about } from './about';
 import { badge } from './badge';
 import { contact, orbit } from './contact';
@@ -13,8 +13,9 @@ import { howto } from './howto';
 import { mssg } from './mssg';
 
 const N = 1200;
-const build = (s: typeof home, seed = 7) => s.build(N, mulberry32(seed));
-const pts = (s: typeof home) => build(s).points;
+const build = <B extends ShapeBuild>(s: ShapeDef<B>, seed = 7): B =>
+  s.build(N, mulberry32(seed));
+const pts = (s: ShapeDef) => build(s).points;
 
 describe('every shape', () => {
   for (const s of [home, about, badge, howto, mssg, contact]) {
@@ -39,11 +40,11 @@ test('home bounds', () => {
 
 test('about network', () => {
   const { points: p, net } = build(about);
-  expect(net!.nodes.length).toBe(21);
-  expect(net!.edges.length).toBe(98);
-  expect(net!.depth).toBe(3);
+  expect(net.nodes.length).toBe(21);
+  expect(net.edges.length).toBe(98);
+  expect(net.depth).toBe(3);
   for (let i = 0; i < 21 * 22; i++) {
-    const c = net!.nodes[Math.floor(i / 22)];
+    const c = net.nodes[Math.floor(i / 22)];
     const d = Math.hypot(
       p[i * 3] - c[0],
       p[i * 3 + 1] - c[1],

@@ -1,9 +1,18 @@
 import { clamp } from '../math';
 import type { Overlay, Projected, ShapeBuild } from '../types';
 
+export type Network = {
+  nodes: [number, number, number][];
+  edges: [number, number, number][];
+  depth: number;
+};
+
+/** A build whose dots trace a network the overlay draws over. */
+export type NetBuild = ShapeBuild & { net: Network };
+
 /** Main:430-446. Edges plus forward-pass pulses of the 4-7-7-3 network. */
-export function networkOverlay(b: ShapeBuild): Overlay {
-  const { nodes, edges, depth } = b.net!;
+export function networkOverlay(b: NetBuild): Overlay {
+  const { nodes, edges, depth } = b.net;
   const segments = new Float32Array(edges.length * 4);
   const dots = {
     xy: new Float32Array(edges.length * 2),

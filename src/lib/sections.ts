@@ -12,6 +12,9 @@ export const SECTIONS = [
 
 export type SectionId = (typeof SECTIONS)[number]['id'];
 
+/** The section that lists the blog posts (post pages and `/blog` link here). */
+export const POSTS_SECTION: SectionId = 'writing';
+
 const IDS: readonly string[] = SECTIONS.map((s) => s.id);
 
 /** Two-digit, 1-based: `01`, `02`, … */
@@ -22,6 +25,9 @@ export const sectionNumber = (id: SectionId): string =>
 
 export const sectionTitle = (id: SectionId): string =>
   SECTIONS.find((s) => s.id === id)!.title;
+
+/** `'writing'` -> `/#writing`: the home page with that row open. */
+export const sectionHref = (id: SectionId): string => `/#${id}`;
 
 /** `#writing` -> `'writing'`; anything that is not a section -> null. */
 export const sectionFromHash = (hash: string): SectionId | null => {

@@ -2,10 +2,18 @@ import type { NextConfig } from 'next';
 
 import createMDX from '@next/mdx';
 
+import { POSTS_SECTION, sectionHref } from './src/lib/sections';
+
 const nextConfig: NextConfig = {
   pageExtensions: ['ts', 'tsx', 'md', 'mdx'],
   async redirects() {
-    return [{ source: '/blog', destination: '/#writing', permanent: true }];
+    return [
+      {
+        source: '/blog',
+        destination: sectionHref(POSTS_SECTION),
+        permanent: true,
+      },
+    ];
   },
   turbopack: {
     rules: {

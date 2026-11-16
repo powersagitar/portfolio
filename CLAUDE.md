@@ -27,11 +27,11 @@ Personal portfolio and blog (Next.js 16, App Router, Tailwind, Bun). Read
   `src/mdx-components.tsx`. The post route uses `dynamicParams = false`.
 - Routes: `/` (home index + dot cloud), the post pages, `/rss.xml`
   (`src/app/rss.xml/route.tsx`), `/sitemap.xml`, `/robots.txt`, `/icon`, and a
-  `/blog` redirect (308) to `/#writing`. All static. The URL hash is the open
-  row: `/#<row-id>` loads with that row open (and `hashchange` follows it),
-  opening a row sets the hash (`history.replaceState`, no history entry) and
-  closing it clears it, so rows are linkable and Back from a post reopens
-  Writing.
+  `/blog` redirect (308) to `POSTS_SECTION`'s hash (`/#writing`). All static.
+  The URL hash is the open row: `/#<row-id>` loads with that row open (and
+  `hashchange` follows it), opening a row sets the hash (`history.replaceState`,
+  no history entry) and closing it clears it, so rows are linkable and Back from
+  a post reopens Writing.
 - Home: `src/components/home/` (`Hero`, `HomeClient`, `IndexList` rows from
   `SECTIONS` with `panels/`). `IndexList` reports the active `CloudKey` to the
   cloud.
@@ -46,9 +46,11 @@ Personal portfolio and blog (Next.js 16, App Router, Tailwind, Bun). Read
 - The `Callout` stub in `src/app/rss.xml/route.tsx` must match `Callout` in
   `src/mdx-components.tsx` (the feed renders posts without the site's styles).
 - Home rows are `SECTIONS` in `src/lib/sections.ts` (order, title, meta).
-  `CloudKey` derives from it; `SHAPES` and `IndexList`'s `extras` are `Record`s
-  over its ids, so TypeScript enforces they match. Row numbers, the hero's
-  count, the post page's `05 Writing` label and the URL hash derive from it too.
+  `CloudKey` derives from it; `SHAPES` (`satisfies`) and `IndexList`'s `extras`
+  are `Record`s over its ids, so TypeScript enforces they match. Row numbers,
+  the hero's count and the URL hash derive from it too. `POSTS_SECTION` names
+  the posts' row: the post page's label and Index link and the `/blog` redirect
+  use it, never a literal `'writing'`.
 
 ## Gotchas
 

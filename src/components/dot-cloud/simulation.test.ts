@@ -44,7 +44,7 @@ function builds(n = 1200, seed = DEFAULT_SEED) {
   const out = {} as Record<CloudKey, ShapeBuild>;
   for (const k of Object.keys(SHAPES) as CloudKey[])
     out[k] = SHAPES[k].build(n, r);
-  return out;
+  return out as { [K in CloudKey]: ReturnType<(typeof SHAPES)[K]['build']> };
 }
 
 const maxDiff = (a: Float32Array, b: Float32Array) => {
@@ -97,8 +97,8 @@ describe('home sim', () => {
     const s = sim.state();
     expect(s.selectedAt).toBe(at);
     const w = builds().writing;
-    const inkU = w.inkU!;
-    const anchor = w.inkAnchor!;
+    const inkU = w.inkU;
+    const anchor = w.inkAnchor;
     const ox = penAt(0)[0] - penAt(1)[0];
     const oy = penAt(0)[1] - penAt(1)[1];
     let riding = 0;

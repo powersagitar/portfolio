@@ -55,9 +55,8 @@ of dots, and divide by area or length so density reads as even.
 - Residue split, `howto.ts`: `i % 3` picks one of three strokes (chevron arm,
   chevron arm, underscore). `mssg.ts`: `i % 4` picks one of four slabs.
 - Mixed, `writing.ts` (the quill): `i % 20` is `< 2` shaft, `< 8` barbs, `8`
-  down, else ink. Ink points also record their path parameter in
-  `ShapeBuild.inkU` and a random quill point to ride on in
-  `ShapeBuild.inkAnchor`.
+  down, else ink. Ink points also record their path parameter in `inkU` and a
+  random quill point to ride on in `inkAnchor`, both on its own `WritingBuild`.
 - Ranges plus residue, `about.ts`: the first `nodes.length * NP` points are
   22-point balls per node, the rest cycle through
   `edges[(i - ...) % edges.length]`.
@@ -166,7 +165,10 @@ shape again resets `tSinceSelected`, so it writes again from the start.
 
 1. Create `shapes/<id>.ts` exporting a `ShapeDef` (`id`, `build`, `view`,
    `tilt`, optionally `animate` and `overlay`). Use `make`. Reference the design
-   source line in a comment as the others do.
+   source line in a comment as the others do. If `animate` or `overlay` needs
+   more than `points`, define the shape's own build type (`ShapeBuild & {…}`,
+   like `WritingBuild` or `NetBuild`) and export a `ShapeDef<ThatBuild>`; do not
+   add fields to the shared `ShapeBuild`.
 2. Add the section (`id`, `title`, `meta`) to `SECTIONS` in
    `src/lib/sections.ts`, in display order. `CloudKey` derives from it, and
    TypeScript then fails until `SHAPES` in `registry.ts` and the `extras` record

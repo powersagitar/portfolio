@@ -1,12 +1,12 @@
 import { TAU } from '../math';
-import { networkOverlay } from '../overlays/network';
+import { type NetBuild, networkOverlay } from '../overlays/network';
 import type { ShapeDef } from '../types';
 import { make } from './make';
 
 const NP = 22;
 
 /** Main:268-285. A small feed-forward neural network (4-7-7-3). */
-export const about: ShapeDef = {
+export const about: ShapeDef<NetBuild> = {
   id: 'about',
   build: (n, r) => {
     const layers = [4, 7, 7, 3];

@@ -9,7 +9,12 @@ import { Footer } from '@/components/site/Footer';
 import { MetaRow } from '@/components/site/MetaRow';
 import { postPosition, splitTitle } from '@/lib/post-meta';
 import { getPost, getPosts } from '@/lib/posts';
-import { sectionNumber, sectionTitle } from '@/lib/sections';
+import {
+  POSTS_SECTION,
+  sectionHref,
+  sectionNumber,
+  sectionTitle,
+} from '@/lib/sections';
 
 type Params = { yyyy: string; mm: string; dd: string; slug: string };
 
@@ -69,11 +74,14 @@ export default async function PostPage({
       <div className="wrap">
         <MetaRow
           left={
-            <Link href="/#writing" className="text-[#d1d1d6] no-underline">
+            <Link
+              href={sectionHref(POSTS_SECTION)}
+              className="text-[#d1d1d6] no-underline"
+            >
               ← Index
             </Link>
           }
-          right={`${sectionNumber('writing')} ${sectionTitle('writing')} · ${index} of ${total}`}
+          right={`${sectionNumber(POSTS_SECTION)} ${sectionTitle(POSTS_SECTION)} · ${index} of ${total}`}
         />
         <PostHeader
           date={post.publishDate}

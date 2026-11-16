@@ -7,8 +7,8 @@ import { WRITE_SECONDS, writeFrame, writeProgress, writing } from './writing';
 
 const N = 1200;
 const b = writing.build(N, mulberry32(7));
-const inkU = b.inkU as Float32Array;
-const anchor = b.inkAnchor as Int32Array;
+const inkU = b.inkU;
+const anchor = b.inkAnchor;
 const animate = writing.animate!;
 const frame = (t: number, reduce: boolean, rate?: Float32Array) =>
   writeFrame(b, new Float32Array(N * 3), t, reduce, rate);

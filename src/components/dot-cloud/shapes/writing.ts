@@ -3,6 +3,13 @@ import type { Rng, ShapeBuild, ShapeDef } from '../types';
 import { make } from './make';
 import { NIB, buildPen, penAt, penInto } from './pen';
 
+export type WritingBuild = ShapeBuild & {
+  /** Per point, its position along the signature (0..1); -1 for the quill. */
+  inkU: Float32Array;
+  /** Per point, the quill point unwritten ink rides on. */
+  inkAnchor: Int32Array;
+};
+
 type P3 = [number, number, number];
 
 /** The quill's top (feather tip); its nib is the pen's end, NIB. */
@@ -103,15 +110,15 @@ export function writeProgress(t: number, reduce: boolean): number {
  * fast and written ink snaps. t is seconds since writing started (may be < 0).
  */
 export function writeFrame(
-  b: ShapeBuild,
+  b: WritingBuild,
   out: Float32Array,
   t: number,
   reduce: boolean,
   rate?: Float32Array,
 ): Float32Array {
   const base = b.points;
-  const U = b.inkU as Float32Array;
-  const A = b.inkAnchor as Int32Array;
+  const U = b.inkU;
+  const A = b.inkAnchor;
   const p = writeProgress(t, reduce);
   const pen = buildPen();
   penInto(pen, p, scratch, 0);
@@ -149,7 +156,7 @@ export function writeFrame(
  * Main:302-312. A quill with its nib at the end of an "MD" signature.
  * i % 20: < 9 quill (see quillPt), rest ink.
  */
-export const writing: ShapeDef = {
+export const writing: ShapeDef<WritingBuild> = {
   id: 'writing',
   build: (n, r) => {
     const inkU = new Float32Array(n).fill(-1);

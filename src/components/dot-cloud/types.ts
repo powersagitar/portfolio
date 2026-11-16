@@ -5,19 +5,12 @@ export type CloudKey = 'home' | SectionId;
 
 export type Rng = () => number;
 
-export type Network = {
-  nodes: [number, number, number][];
-  edges: [number, number, number][];
-  depth: number;
-};
-
-export type ShapeBuild = {
-  points: Float32Array;
-  inkU?: Float32Array;
-  /** Writing: per point, the quill point unwritten ink rides on. */
-  inkAnchor?: Int32Array;
-  net?: Network;
-};
+/**
+ * What a shape's `build` returns. A shape that needs more per-build data
+ * (Writing's ink, About's network) extends this with its own type and
+ * declares it as `ShapeDef<ItsBuild>`; the shared type never grows.
+ */
+export type ShapeBuild = { points: Float32Array };
 
 export type ViewMode = { kind: 'spin'; rate: number } | { kind: 'settle' };
 
@@ -60,13 +53,19 @@ export type OverlayCtx = {
 
 export type Overlay = { frame: (ctx: OverlayCtx) => OverlayFrame };
 
-export type ShapeDef = {
+/**
+ * `B` is the shape's own build type: `animate` and `overlay` receive what
+ * this shape's `build` returned, typed as such. They are method signatures
+ * so a `ShapeDef<WritingBuild>` is still a `ShapeDef`: the sim only ever
+ * passes a shape's own build back to it.
+ */
+export type ShapeDef<B extends ShapeBuild = ShapeBuild> = {
   id: CloudKey;
-  build: (n: number, rng: Rng) => ShapeBuild;
+  build: (n: number, rng: Rng) => B;
   view: ViewMode;
   tilt: number;
-  animate?: (
-    b: ShapeBuild,
+  animate?(
+    b: B,
     out: Float32Array,
     tSinceSelected: number,
     reduce: boolean,
@@ -75,6 +74,6 @@ export type ShapeDef = {
      * default; animate may override entries (1 = snap to target).
      */
     rate?: Float32Array,
-  ) => Float32Array;
-  overlay?: (b: ShapeBuild) => Overlay;
+  ): Float32Array;
+  overlay?(b: B): Overlay;
 };
