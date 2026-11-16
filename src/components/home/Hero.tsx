@@ -1,6 +1,15 @@
+'use client';
+
+import { useRef } from 'react';
+
 import { MetaRow } from '@/components/site/MetaRow';
+import { useOpticalAlign } from '@/hooks/use-optical-align';
 
 export function Hero() {
+  const nameRef = useRef<HTMLHeadingElement>(null);
+  const taglineRef = useRef<HTMLParagraphElement>(null);
+  const marginLeft = useOpticalAlign(nameRef, taglineRef);
+
   return (
     <section
       className="relative z-1 box-border flex min-h-screen flex-col justify-between px-[clamp(20px,4vw,64px)] pt-10 pb-12 max-[700px]:min-h-[88vh] max-[700px]:px-5 max-[700px]:pt-6 max-[700px]:pb-8"
@@ -8,13 +17,16 @@ export function Hero() {
     >
       <MetaRow left="Index — 06" right="mohandong.com" />
       <div className="flex flex-col gap-10">
-        <h1 className="name">
+        <h1 ref={nameRef} className="name" style={{ marginLeft }}>
           Mohan
           <br />
           Dong
         </h1>
         <div className="flex flex-wrap items-end justify-between gap-x-10 gap-y-4">
-          <p className="m-0 max-w-[26ch] text-[clamp(20px,2.2vw,30px)] leading-[1.25] font-medium tracking-[-0.02em]">
+          <p
+            ref={taglineRef}
+            className="m-0 max-w-[26ch] text-[clamp(20px,2.2vw,30px)] leading-[1.25] font-medium tracking-[-0.02em]"
+          >
             Software Engineering,
             <br />
             University of Waterloo.
