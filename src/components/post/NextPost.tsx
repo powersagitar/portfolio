@@ -9,7 +9,7 @@ type NextPostProps = {
 
 export function NextPost({ index, total, title, href }: NextPostProps) {
   return (
-    <nav aria-label="Next post" className="mx-auto mt-30 max-w-[1040px]">
+    <nav aria-label="Next post" className="mt-30">
       <p className="mono m-0 mb-3 text-xs tracking-[.08em] text-[#86868b] uppercase">
         Next
       </p>
