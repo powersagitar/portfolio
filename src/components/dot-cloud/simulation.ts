@@ -5,6 +5,7 @@ import {
   easeRate,
   homeLayout,
   postLayout,
+  projectInto,
 } from './math';
 import { SHAPES } from './registry';
 import { mulberry32 } from './rng';
@@ -68,9 +69,9 @@ function dotBatch(n: number): DotBatch {
 }
 
 /**
- * Mutable rotation + layout shared by the dots and overlays of one frame
- * (same math as makeProjector, Main:417). `into` writes x, y, f, z without
- * allocating; `project` is the Projector handed to overlays.
+ * Mutable rotation + layout shared by the dots and overlays of one frame.
+ * `into` projects into one reused object (no allocation); `project` is the
+ * Projector handed to overlays and returns a fresh object per call.
  */
 function camera() {
   let cy = 1;
@@ -78,21 +79,7 @@ function camera() {
   let cx = 1;
   let sx = 0;
   let l: Layout = { ox: 0, oy: 0, sx: 1, sy: 1 };
-  const o = { x: 0, y: 0, f: 1, z: 0, vx: 0, vy: 0 };
-  const into = (x: number, y: number, z: number) => {
-    const x1 = x * cy + z * sy;
-    const z1 = -x * sy + z * cy;
-    const y1 = y * cx - z1 * sx;
-    const z2 = y * sx + z1 * cx;
-    const f = 3 / (3 + z2);
-    o.x = l.ox + x1 * f * l.sx;
-    o.y = l.oy + y1 * f * l.sy;
-    o.f = f;
-    o.z = z2;
-    o.vx = x1;
-    o.vy = y1;
-    return o;
-  };
+  const o: Projected = { x: 0, y: 0, f: 1, z: 0, vx: 0, vy: 0 };
   return {
     set(ry: number, rx: number, layout: Layout) {
       cy = Math.cos(ry);
@@ -101,10 +88,20 @@ function camera() {
       sx = Math.sin(rx);
       l = layout;
     },
-    into,
-    project: (x: number, y: number, z: number): Projected => ({
-      ...into(x, y, z),
-    }),
+    into: (x: number, y: number, z: number) =>
+      projectInto(o, x, y, z, cy, sy, cx, sx, l),
+    project: (x: number, y: number, z: number): Projected =>
+      projectInto(
+        { x: 0, y: 0, f: 0, z: 0, vx: 0, vy: 0 },
+        x,
+        y,
+        z,
+        cy,
+        sy,
+        cx,
+        sx,
+        l,
+      ),
   };
 }
 

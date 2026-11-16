@@ -1,4 +1,4 @@
-import type { Layout, Projector } from './types';
+import type { Layout, Projected, Projector } from './types';
 
 export const TAU = Math.PI * 2;
 
@@ -36,27 +36,53 @@ export function postLayout(W: number, H: number): Layout {
   return { ox: W * 0.5, oy: H * 0.5, sx: S, sy: S };
 }
 
-/** Main:417. +y is down. */
+/**
+ * Main:417. +y is down. Allocation-free: rotates (x, y, z) by the yaw/pitch
+ * sines and cosines, applies perspective and the layout, writes into `out`.
+ */
+export function projectInto(
+  out: Projected,
+  x: number,
+  y: number,
+  z: number,
+  cy: number,
+  sy: number,
+  cx: number,
+  sx: number,
+  l: Layout,
+): Projected {
+  const x1 = x * cy + z * sy;
+  const z1 = -x * sy + z * cy;
+  const y1 = y * cx - z1 * sx;
+  const z2 = y * sx + z1 * cx;
+  const f = 3 / (3 + z2);
+  out.x = l.ox + x1 * f * l.sx;
+  out.y = l.oy + y1 * f * l.sy;
+  out.f = f;
+  out.z = z2;
+  out.vx = x1;
+  out.vy = y1;
+  return out;
+}
+
+/** Main:417. Returns a fresh Projected per call. */
 export function makeProjector(ry: number, rx: number, l: Layout): Projector {
   const cy = Math.cos(ry);
   const sy = Math.sin(ry);
   const cx = Math.cos(rx);
   const sx = Math.sin(rx);
-  return (x, y, z) => {
-    const x1 = x * cy + z * sy;
-    const z1 = -x * sy + z * cy;
-    const y1 = y * cx - z1 * sx;
-    const z2 = y * sx + z1 * cx;
-    const f = 3 / (3 + z2);
-    return {
-      x: l.ox + x1 * f * l.sx,
-      y: l.oy + y1 * f * l.sy,
-      f,
-      z: z2,
-      vx: x1,
-      vy: y1,
-    };
-  };
+  return (x, y, z) =>
+    projectInto(
+      { x: 0, y: 0, f: 0, z: 0, vx: 0, vy: 0 },
+      x,
+      y,
+      z,
+      cy,
+      sy,
+      cx,
+      sx,
+      l,
+    );
 }
 
 export function dotSize(f: number, dpr: number): number {
