@@ -59,7 +59,7 @@ export default async function PostPage({
   const { default: Body } = await import(
     `@content/blog/${yyyy}/${mm}/${dd}/${slug}.mdx`
   );
-  const { index, total, next } = postPosition(getPosts(), post.path);
+  const { index, total, next, nextIndex } = postPosition(getPosts(), post.path);
   const { headline, subhead } = splitTitle(post.title, post.description);
 
   return (
@@ -83,7 +83,7 @@ export default async function PostPage({
           <Body />
         </article>
         <NextPost
-          index={index}
+          index={nextIndex}
           total={total}
           title={next.title}
           href={next.path}

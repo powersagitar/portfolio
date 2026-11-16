@@ -99,7 +99,12 @@ describe('ordering', () => {
       index: 3,
       total: 3,
       next: a,
+      nextIndex: 1,
     });
-    expect(postPosition(sorted, a.path).next).toBe(b);
+    expect(postPosition(sorted, a.path)).toMatchObject({
+      index: 1,
+      next: b,
+      nextIndex: 2,
+    });
   });
 });

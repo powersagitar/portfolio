@@ -43,13 +43,15 @@ export function sortNewestFirst(posts: Post[]): Post[] {
 export function postPosition(
   posts: Post[],
   path: string,
-): { index: number; total: number; next: Post } {
+): { index: number; total: number; next: Post; nextIndex: number } {
   const i = posts.findIndex((p) => p.path === path);
   if (i === -1) throw new Error(`Unknown post: ${path}`);
+  const n = (i + 1) % posts.length;
   return {
     index: i + 1,
     total: posts.length,
-    next: posts[(i + 1) % posts.length],
+    next: posts[n],
+    nextIndex: n + 1,
   };
 }
 export const SITE_URL = 'https://www.mohandong.com';
