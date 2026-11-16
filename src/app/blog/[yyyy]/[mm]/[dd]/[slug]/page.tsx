@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
+import { DotCloud } from '@/components/dot-cloud';
 import { NextPost } from '@/components/post/NextPost';
 import { PostHeader } from '@/components/post/PostHeader';
 import { Footer } from '@/components/site/Footer';
@@ -55,7 +56,7 @@ export default async function PostPage({
 
   return (
     <div className="relative min-h-screen overflow-x-clip bg-black text-[#f5f5f7]">
-      {/* cloud: Task 11 */}
+      <DotCloud variant="post" />
       <div className="wrap">
         <MetaRow
           left={

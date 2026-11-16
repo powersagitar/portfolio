@@ -257,6 +257,44 @@
   }
 }
 
+/* Dot cloud canvas. Home: .stage/.obj (Main:20-21, phone Main:60); post:
+   .obj (Post:19, phone Post:29). */
+.cloud-stage {
+  position: sticky;
+  top: 0;
+  height: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.cloud-home {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: block;
+  pointer-events: none;
+}
+.cloud-post {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 46vw;
+  height: 620px;
+  display: block;
+  pointer-events: none;
+}
+@media (max-width: 700px) {
+  .cloud-home {
+    opacity: 0.6;
+  }
+  .cloud-post {
+    width: 100vw;
+    height: 420px;
+    opacity: 0.5;
+  }
+}
+
 /* Home index (Main.dc.html). In the components layer so utilities can
    override them. */
 @layer components {
