@@ -12,9 +12,9 @@ export function Badge() {
             Badge Emulator<span className="text-[#b07ccb]">.</span>
           </h2>
           <p className="m-0 text-[18px] leading-[1.5] text-[#bdbdbd]">
-            An emulator for the Hack the North 2026 badge: a Lua sandbox and the
-            real firmware modes, on a badge that hangs from a lanyard you can
-            drag and fling. Not affiliated with Hack the North.
+            An emulator for the Hack the North 2026 badge that runs the real
+            firmware, on a badge that hangs from a lanyard you can drag and
+            fling. Not affiliated with Hack the North.
           </p>
           <span className="font-quill text-[12px] leading-none font-medium tracking-[.06em] text-[#8a8a8a]">
             RUST · GPL-3.0
