@@ -52,6 +52,11 @@
 /* Dark only: there is no light theme. */
 :root {
   color-scheme: dark;
+  --stage: 1920px;
+  --gutter: max(
+    clamp(20px, 4vw, 64px),
+    calc((100vw - var(--stage)) / 2 + 64px)
+  );
   --background: #000;
   --foreground: #f5f5f7;
   --card: #0d0d0d;
@@ -119,13 +124,13 @@
 .wrap {
   position: relative;
   z-index: 1;
-  padding: 40px clamp(20px, 4vw, 64px) 48px;
+  padding: 40px var(--gutter) 48px;
 }
 
 .post-title {
   margin: 0;
   max-width: 12ch;
-  font-size: clamp(52px, 8.4vw, 132px);
+  font-size: clamp(52px, 8.4vw, 161px);
   font-weight: 700;
   letter-spacing: -0.05em;
   line-height: 0.9;
@@ -232,7 +237,7 @@
   text-decoration: none;
 }
 .next-post .t {
-  font-size: clamp(32px, 5vw, 72px);
+  font-size: clamp(32px, 5vw, 96px);
   font-weight: 700;
   letter-spacing: -0.04em;
   line-height: 1;
@@ -278,8 +283,8 @@
 .cloud-post {
   position: absolute;
   top: 0;
-  right: 0;
-  width: 46vw;
+  right: max(0px, calc((100vw - var(--stage)) / 2));
+  width: min(46vw, 883px);
   height: 620px;
   display: block;
   pointer-events: none;
@@ -300,7 +305,7 @@
 @layer components {
   .name {
     margin: 0;
-    font-size: clamp(76px, 15.5vw, 248px);
+    font-size: clamp(76px, 15.5vw, 298px);
     font-weight: 700;
     letter-spacing: -0.055em;
     line-height: 0.84;
@@ -311,7 +316,7 @@
     z-index: 1;
     list-style: none;
     margin: 0;
-    padding: 0 clamp(20px, 4vw, 64px);
+    padding: 0 var(--gutter);
   }
   .idx > li {
     border-top: 1px solid #2c2c2e;
@@ -346,7 +351,7 @@
   }
   .row .t {
     grid-area: t;
-    font-size: clamp(44px, 7.4vw, 116px);
+    font-size: clamp(44px, 7.4vw, 142px);
     font-weight: 700;
     letter-spacing: -0.045em;
     line-height: 0.95;

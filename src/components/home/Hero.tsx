@@ -13,7 +13,7 @@ export function Hero() {
 
   return (
     <section
-      className="relative z-1 box-border flex min-h-screen flex-col justify-between px-[clamp(20px,4vw,64px)] pt-10 pb-12 max-[700px]:min-h-[88vh] max-[700px]:px-5 max-[700px]:pt-6 max-[700px]:pb-8"
+      className="relative z-1 box-border flex min-h-screen flex-col justify-between px-(--gutter) pt-10 pb-12 max-[700px]:min-h-[88vh] max-[700px]:px-5 max-[700px]:pt-6 max-[700px]:pb-8"
       aria-label="Introduction"
     >
       <MetaRow

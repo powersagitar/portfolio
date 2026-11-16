@@ -43,6 +43,8 @@ Personal portfolio and blog (Next.js 16, App Router, Tailwind, Bun). Read
 
 ## Keep in sync
 
+- The stage width 1920px is `--stage` in `globals.css` and `STAGE_MAX` in
+  `src/components/dot-cloud/math.ts`.
 - The `Callout` stub in `src/app/rss.xml/route.tsx` must match `Callout` in
   `src/mdx-components.tsx` (the feed renders posts without the site's styles).
 - Home rows are `SECTIONS` in `src/lib/sections.ts` (order, title, meta).

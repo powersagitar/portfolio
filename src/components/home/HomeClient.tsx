@@ -23,9 +23,7 @@ export function HomeClient({ posts, footer }: HomeClientProps) {
       <DotCloud variant="home" cloudKey={cloudKey} />
       <Hero />
       <IndexList posts={posts} onCloudKey={setCloudKey} />
-      <div className="relative z-1 px-[clamp(20px,4vw,64px)] pb-12">
-        {footer}
-      </div>
+      <div className="relative z-1 px-(--gutter) pb-12">{footer}</div>
     </div>
   );
 }
