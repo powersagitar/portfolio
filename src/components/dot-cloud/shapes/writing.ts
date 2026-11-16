@@ -1,7 +1,9 @@
 import { clamp, easeInOutQuad } from '../math';
 import type { ShapeDef } from '../types';
 import { make } from './make';
-import { buildPen, penAt } from './pen';
+import { buildPen, penAt, penInto } from './pen';
+
+const scratch = new Float64Array(2);
 
 /**
  * Main:302-313. A quill (shaft, tapered vanes) with its nib at the end of a
@@ -58,10 +60,10 @@ export const writing: ShapeDef = {
     const base = b.points;
     const U = b.inkU as Float32Array;
     const p = reduce ? 1 : easeInOutQuad(clamp(t / 5.5, 0, 1));
-    const tip = penAt(p);
-    const end = penAt(1);
-    const ox = tip[0] - end[0];
-    const oy = tip[1] - end[1];
+    const pen = buildPen();
+    penInto(pen, p, scratch, 0);
+    const ox = scratch[0] - pen.end[0];
+    const oy = scratch[1] - pen.end[1];
     for (let i = 0; i < U.length; i++) {
       const j = i * 3;
       if (U[i] < 0) {
@@ -69,9 +71,7 @@ export const writing: ShapeDef = {
         out[j + 1] = base[j + 1] + oy;
         out[j + 2] = base[j + 2];
       } else {
-        const v = penAt(Math.min(U[i], p));
-        out[j] = v[0];
-        out[j + 1] = v[1];
+        penInto(pen, Math.min(U[i], p), out, j);
         out[j + 2] = base[j + 2];
       }
     }

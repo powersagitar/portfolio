@@ -5,6 +5,8 @@ export type PenLut = {
   L: number[];
   T: number;
   lift: [number, number];
+  /** penAt(1), computed once. */
+  end: [number, number];
 };
 
 type Pt = [number, number];
@@ -149,13 +151,25 @@ export function buildPen(): PenLut {
   for (let i = 1; i < P.length; i++)
     L.push(L[i - 1] + Math.hypot(P[i][0] - P[i - 1][0], P[i][1] - P[i - 1][1]));
   const T = L[L.length - 1];
-  lut = { P, L, T, lift: [L[a.length - 1] / T, L[a.length] / T] };
+  const built: PenLut = {
+    P,
+    L,
+    T,
+    lift: [L[a.length - 1] / T, L[a.length] / T],
+    end: [0, 0],
+  };
+  penInto(built, 1, built.end, 0);
+  lut = built;
   return lut;
 }
 
-/** Main:359-368. Position along the pen path, u in [0,1] by arc length (clamped). */
-export function penAt(u: number): [number, number] {
-  const { P, L, T } = buildPen();
+/** Main:359-368. Allocation-free: writes the pen position at u (clamped) to out[j], out[j+1]. */
+export function penInto(
+  { P, L, T }: Pick<PenLut, 'P' | 'L' | 'T'>,
+  u: number,
+  out: ArrayLike<number> & { [k: number]: number },
+  j: number,
+): void {
   const d = clamp(u, 0, 1) * T;
   let lo = 0;
   let hi = L.length - 1;
@@ -165,8 +179,13 @@ export function penAt(u: number): [number, number] {
     else hi = mid;
   }
   const s = L[hi] > L[lo] ? (d - L[lo]) / (L[hi] - L[lo]) : 0;
-  return [
-    P[lo][0] + (P[hi][0] - P[lo][0]) * s,
-    P[lo][1] + (P[hi][1] - P[lo][1]) * s,
-  ];
+  out[j] = P[lo][0] + (P[hi][0] - P[lo][0]) * s;
+  out[j + 1] = P[lo][1] + (P[hi][1] - P[lo][1]) * s;
+}
+
+/** Position along the pen path, u in [0,1] by arc length (clamped). */
+export function penAt(u: number): [number, number] {
+  const r: [number, number] = [0, 0];
+  penInto(buildPen(), u, r, 0);
+  return r;
 }
