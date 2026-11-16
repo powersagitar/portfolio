@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import 'server-only';
 
+import { type PostOutline, outlineFromMdx } from './outline';
 import {
   type Post,
   type PostParams,
@@ -10,6 +11,9 @@ import {
   sortNewestFirst,
   toIsoDate,
 } from './post-meta';
+
+const root = () =>
+  path.join(/* turbopackIgnore: true */ process.cwd(), 'content/blog');
 
 const cache = new Map<string, Post[]>();
 
@@ -42,12 +46,7 @@ function readPost(file: string, params: PostParams): Post {
   }
 }
 
-export function getPosts(
-  dir: string = path.join(
-    /* turbopackIgnore: true */ process.cwd(),
-    'content/blog',
-  ),
-): Post[] {
+export function getPosts(dir: string = root()): Post[] {
   const cached = cache.get(dir);
   if (cached) return cached;
   const posts: Post[] = [];
@@ -75,5 +74,11 @@ export function getPost(p: PostParams): Post | undefined {
   return getPosts().find(
     (x) =>
       x.yyyy === p.yyyy && x.mm === p.mm && x.dd === p.dd && x.slug === p.slug,
+  );
+}
+
+export function getOutline({ yyyy, mm, dd, slug }: PostParams): PostOutline {
+  return outlineFromMdx(
+    fs.readFileSync(path.join(root(), yyyy, mm, dd, `${slug}.mdx`), 'utf8'),
   );
 }
