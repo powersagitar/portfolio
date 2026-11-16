@@ -33,7 +33,15 @@ export async function generateMetadata({
       type: 'article',
       title: post.title,
       description: post.description,
+      url: post.path,
+      siteName: 'Mohan Dong',
       publishedTime: post.publishDate,
+      ...(post.lastEdited ? { modifiedTime: post.lastEdited } : {}),
+    },
+    twitter: {
+      card: 'summary',
+      title: post.title,
+      description: post.description,
     },
   };
 }
@@ -60,11 +68,7 @@ export default async function PostPage({
       <div className="wrap">
         <MetaRow
           left={
-            <Link
-              href="/"
-              className="text-[#d1d1d6]"
-              style={{ textDecoration: 'none' }}
-            >
+            <Link href="/" className="text-[#d1d1d6] no-underline">
               ← Index
             </Link>
           }

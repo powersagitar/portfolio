@@ -82,9 +82,9 @@ All use the `Rng` (`() => number` in [0, 1)) passed to `build`, never
   lanyard and the network edges are pure lerps.
 - **Layered planes** (`mssg.ts`): `i % 4` picks a slab, each a uniform rectangle
   offset in x, y and z by its layer index.
-- **Parametric curves** (orbits in `contact.ts`): `orbit(plane, u)` returns a
-  tilted circle (`ORBIT.INC` radians) rotated about y per plane, with `u` from
-  `r() * TAU`.
+- **Parametric curves** (orbits in `shapes/orbit.ts`, re-exported by
+  `contact.ts`): `orbit(plane, u)` returns a tilted circle (`ORBIT.INC` radians)
+  rotated about y per plane, with `u` from `r() * TAU`.
 - **Splines with an arc-length table** (the quill's ink in `shapes/pen.ts`):
   `buildPen()` runs a Catmull-Rom spline through control points and builds a
   cumulative length table (`PenLut.L`), so `penAt(u)` returns the point at
@@ -184,5 +184,5 @@ it writes again from the start.
 | `badge`   | Name badge on a lanyard          | Uniform thin box, segments                          | 82% board, 18% lanyard                  | spin 0.2  | None                      |
 | `howto`   | Terminal prompt `>_`             | Jittered segments, z thickness                      | `i % 3`: two chevron arms, underscore   | spin 0.2  | None                      |
 | `mssg`    | Four stacked message pages       | Layered planes                                      | `i % 4`: one slab each                  | spin 0.2  | None                      |
-| `writing` | Quill writing "hello"            | Shaft and vanes by area, spline with arc-length LUT | `i % 20`: <2 shaft, <9 vanes, else ink  | settle    | `animate`: writes in 5.5s |
+| `writing` | Quill writing "hello world"      | Shaft and vanes by area, spline with arc-length LUT | `i % 20`: <2 shaft, <9 vanes, else ink  | settle    | `animate`: writes in 5.5s |
 | `contact` | Earth with Starlink-style orbits | Fibonacci sphere, parametric orbits                 | 62% Earth, rest across 6 planes (`% 6`) | spin 0.06 | `constellationOverlay`    |

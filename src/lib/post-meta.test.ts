@@ -63,6 +63,16 @@ describe('splitTitle', () => {
       subhead: 'B: C',
     });
   });
+  test('only splits on a colon followed by a space', () => {
+    expect(splitTitle('C++::Foo', 'd')).toEqual({
+      headline: 'C++::Foo',
+      subhead: 'd',
+    });
+    expect(splitTitle('10:30 Club', 'd')).toEqual({
+      headline: '10:30 Club',
+      subhead: 'd',
+    });
+  });
   test('uses the description without a colon', () => {
     expect(
       splitTitle('Mastermind—The ICS4U Culminating Project', 'We finished…'),

@@ -38,6 +38,14 @@ type Row = {
   panel: ReactNode;
 };
 
+const SCROLL_KEY = 'index-scroll';
+let poppedBack = false;
+if (typeof window !== 'undefined') {
+  window.addEventListener('popstate', () => {
+    poppedBack = true;
+  });
+}
+
 export function IndexList({ posts, onCloudKey }: IndexListProps) {
   const [open, setOpen] = useState<RowId | null>(null);
   const keyRef = useRef<CloudKey>('home');
@@ -52,11 +60,27 @@ export function IndexList({ posts, onCloudKey }: IndexListProps) {
   );
 
   useEffect(() => {
-    const openFromHash = () => {
+    const openFromHash = (e?: Event) => {
       if (window.location.hash !== '#writing') return;
       setOpen('writing');
       setKey('writing');
-      document.getElementById('writing')?.scrollIntoView();
+      // Back from a post restores the scroll saved when a link was clicked;
+      // any other arrival scrolls Writing into view.
+      let saved: string | null = null;
+      try {
+        saved = sessionStorage.getItem(SCROLL_KEY);
+        sessionStorage.removeItem(SCROLL_KEY);
+      } catch {}
+      if (!e && poppedBack && saved !== null) {
+        // Next scrolls to the hash target after mount; restore after that.
+        const y = Number(saved);
+        requestAnimationFrame(() =>
+          requestAnimationFrame(() => window.scrollTo(0, y)),
+        );
+      } else {
+        document.getElementById('writing')?.scrollIntoView();
+      }
+      poppedBack = false;
     };
     openFromHash();
     window.addEventListener('hashchange', openFromHash);
@@ -111,6 +135,13 @@ export function IndexList({ posts, onCloudKey }: IndexListProps) {
     // Closing reports the row that was open; opening reports the new row.
     setKey(next ?? open ?? 'home');
     setOpen(next);
+    // Keep Writing's open state in the URL so Back from a post restores it.
+    const { pathname, search, hash } = window.location;
+    if (next === 'writing') {
+      history.replaceState(history.state, '', `${pathname}${search}#writing`);
+    } else if (hash === '#writing') {
+      history.replaceState(history.state, '', `${pathname}${search}`);
+    }
   };
 
   return (
@@ -121,7 +152,16 @@ export function IndexList({ posts, onCloudKey }: IndexListProps) {
       value={open ?? ''}
       onValueChange={toggle}
     >
-      <ol className="idx" onMouseLeave={() => setKey(open ?? 'home')}>
+      <ol
+        className="idx"
+        onClickCapture={(e) => {
+          if (!(e.target as Element).closest('a')) return;
+          try {
+            sessionStorage.setItem(SCROLL_KEY, String(window.scrollY));
+          } catch {}
+        }}
+        onMouseLeave={() => setKey(open ?? 'home')}
+      >
         {rows.map((row) => (
           <AccordionItem key={row.id} value={row.id} asChild>
             <li id={row.id}>

@@ -1,5 +1,5 @@
 import { TAU, clamp } from '../math';
-import { ORBIT, orbit } from '../shapes/contact';
+import { ORBIT, orbit } from '../shapes/orbit';
 import type { Overlay, Projected } from '../types';
 
 /** Behind the globe's disc: far side and inside the Earth's silhouette. */

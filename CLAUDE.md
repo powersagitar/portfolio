@@ -27,7 +27,9 @@ Personal portfolio and blog (Next.js 16, App Router, Tailwind, Bun). Read
   `src/mdx-components.tsx`. The post route uses `dynamicParams = false`.
 - Routes: `/` (home index + dot cloud), the post pages, `/rss.xml`
   (`src/app/rss.xml/route.tsx`), `/sitemap.xml`, `/robots.txt`, `/icon`, and a
-  `/blog` redirect. All static.
+  `/blog` redirect (308) to `/#writing`. All static. Opening the Writing row
+  sets the URL hash to `#writing` (`history.replaceState`) and closing it or
+  opening another row clears it, so Back from a post reopens Writing.
 - Home: `src/components/home/` (`Hero`, `HomeClient`, `IndexList` rows with
   `panels/`). `IndexList` reports the active `CloudKey` to the cloud.
 - Dot cloud: `src/components/dot-cloud/`, layered as pure data to pure sim to
