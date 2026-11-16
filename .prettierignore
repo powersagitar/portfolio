@@ -4,3 +4,4 @@ docs/superpowers/specs/*-design-source/
 .superpowers/
 .next/
 bun.lock
+content/blog/
