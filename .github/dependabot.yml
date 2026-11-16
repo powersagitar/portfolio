@@ -1,0 +1,36 @@
+version: 2
+updates:
+  - package-ecosystem: bun
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: chore(deps)
+    groups:
+      # Packages pinned to matching versions must move together.
+      next:
+        patterns:
+          - next
+          - '@next/*'
+          - eslint-config-next
+      react:
+        patterns:
+          - react
+          - react-dom
+          - '@types/react'
+          - '@types/react-dom'
+      tailwind:
+        patterns:
+          - tailwindcss
+          - '@tailwindcss/*'
+      three:
+        patterns:
+          - three
+          - '@types/three'
+      # Everything else: batch minor and patch bumps into one PR.
+      minor-and-patch:
+        update-types:
+          - minor
+          - patch
