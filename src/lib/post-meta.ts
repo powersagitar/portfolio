@@ -20,18 +20,6 @@ export function toIsoDate(v: unknown): string {
   throw new Error(`Invalid date: ${String(v)}`);
 }
 
-export function splitTitle(
-  title: string,
-  description: string,
-): { headline: string; subhead: string } {
-  const i = title.indexOf(': ');
-  if (i === -1) return { headline: title, subhead: description };
-  return {
-    headline: title.slice(0, i).trim(),
-    subhead: title.slice(i + 2).trim(),
-  };
-}
-
 export function sortNewestFirst(posts: Post[]): Post[] {
   return [...posts].sort(
     (a, b) =>

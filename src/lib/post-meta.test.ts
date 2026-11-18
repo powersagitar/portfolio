@@ -5,7 +5,6 @@ import {
   postPath,
   postPosition,
   sortNewestFirst,
-  splitTitle,
   toIsoDate,
 } from './post-meta';
 
@@ -43,43 +42,6 @@ describe('toIsoDate', () => {
   });
   test('throws otherwise', () => {
     expect(() => toIsoDate(42)).toThrow();
-  });
-});
-
-describe('splitTitle', () => {
-  test('splits at the first colon', () => {
-    expect(
-      splitTitle(
-        'Decoding Conditionals: A Dive into if-else, switch-case, Lookup Tables, and Interfaces',
-        'd',
-      ),
-    ).toEqual({
-      headline: 'Decoding Conditionals',
-      subhead:
-        'A Dive into if-else, switch-case, Lookup Tables, and Interfaces',
-    });
-    expect(splitTitle('A: B: C', 'd')).toEqual({
-      headline: 'A',
-      subhead: 'B: C',
-    });
-  });
-  test('only splits on a colon followed by a space', () => {
-    expect(splitTitle('C++::Foo', 'd')).toEqual({
-      headline: 'C++::Foo',
-      subhead: 'd',
-    });
-    expect(splitTitle('10:30 Club', 'd')).toEqual({
-      headline: '10:30 Club',
-      subhead: 'd',
-    });
-  });
-  test('uses the description without a colon', () => {
-    expect(
-      splitTitle('Mastermind—The ICS4U Culminating Project', 'We finished…'),
-    ).toEqual({
-      headline: 'Mastermind—The ICS4U Culminating Project',
-      subhead: 'We finished…',
-    });
   });
 });
 

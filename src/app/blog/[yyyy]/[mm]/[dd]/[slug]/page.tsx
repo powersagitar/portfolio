@@ -8,7 +8,7 @@ import { PostHeader } from '@/components/post/PostHeader';
 import { Toc } from '@/components/post/Toc';
 import { Footer } from '@/components/site/Footer';
 import { MetaRow } from '@/components/site/MetaRow';
-import { postPosition, splitTitle } from '@/lib/post-meta';
+import { postPosition } from '@/lib/post-meta';
 import { getOutline, getPost, getPosts } from '@/lib/posts';
 import {
   POSTS_SECTION,
@@ -68,7 +68,6 @@ export default async function PostPage({
   );
   const { index, total, next, nextIndex } = postPosition(getPosts(), post.path);
   const outline = getOutline(p);
-  const { headline, subhead } = splitTitle(post.title, post.description);
 
   return (
     <div className="relative min-h-screen overflow-x-clip bg-black text-[#f5f5f7]">
@@ -87,8 +86,8 @@ export default async function PostPage({
         />
         <PostHeader
           date={post.publishDate}
-          headline={headline}
-          subhead={subhead}
+          headline={post.title}
+          subhead={post.description}
         />
         <div className="post-layout">
           {outline.sections.length > 0 && (
