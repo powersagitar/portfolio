@@ -155,10 +155,11 @@
   align-items: start;
 }
 .post-body h2,
-.post-body h3 {
+.post-body h3,
+.post-body h4 {
   scroll-margin-top: 32px;
 }
-.post-body :is(h2, h3)[tabindex='-1']:focus {
+.post-body :is(h2, h3, h4)[tabindex='-1']:focus {
   outline: none;
 }
 .toc {
@@ -323,6 +324,13 @@
   font-weight: 600;
   color: #f5f5f7;
 }
+.post-body h4 {
+  margin: 32px 0 10px;
+  font-stretch: expanded;
+  font-size: 18px;
+  font-weight: 600;
+  color: #f5f5f7;
+}
 .post-body p {
   margin: 0 0 22px;
 }
@@ -357,6 +365,7 @@
 }
 .post-body h2:hover .anc,
 .post-body h3:hover .anc,
+.post-body h4:hover .anc,
 .post-body .anc:focus-visible {
   opacity: 1;
 }
