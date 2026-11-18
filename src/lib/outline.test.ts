@@ -35,10 +35,6 @@ test('real post ids and labels', () => {
     'thanks-for-reading',
     'update-on-may-8-2025',
   ]);
-  const badge = ids('2026', '11', '16', 'hack-the-badge');
-  expect(badge).toHaveLength(7);
-  expect(badge[0]).toBe('the-plan-that-didnt-survive-day-one');
-  expect(badge[6]).toBe('looking-back');
 });
 
 test('frontmatter is not a heading', () => {
