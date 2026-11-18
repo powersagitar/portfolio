@@ -129,6 +129,7 @@
 
 .post-title {
   margin: 0;
+  font-stretch: ultra-expanded;
   max-width: 12ch;
   font-size: clamp(52px, 8.4vw, 161px);
   font-weight: 700;
@@ -299,6 +300,7 @@
 }
 .post-body h2 {
   counter-increment: sec;
+  font-stretch: expanded;
   font-weight: 700;
   margin: 0 0 16px;
   font-size: 30px;
@@ -316,6 +318,7 @@
 }
 .post-body h3 {
   margin: 40px 0 12px;
+  font-stretch: expanded;
   font-size: 22px;
   font-weight: 600;
   color: #f5f5f7;
@@ -432,6 +435,10 @@
   .wrap {
     padding: 24px 20px 32px;
   }
+  /* Ultra-expanded is about twice as wide, so long words need a smaller size. */
+  .post-title {
+    font-size: min(11vw, 52px);
+  }
   .post-body {
     font-size: 17px;
   }
@@ -486,6 +493,7 @@
 @layer components {
   .name {
     margin: 0;
+    font-stretch: ultra-expanded;
     font-size: clamp(76px, 15.5vw, 298px);
     font-weight: 700;
     letter-spacing: -0.055em;
@@ -532,6 +540,7 @@
   }
   .row .t {
     grid-area: t;
+    font-stretch: expanded;
     font-size: clamp(44px, 7.4vw, 142px);
     font-weight: 700;
     letter-spacing: -0.045em;
