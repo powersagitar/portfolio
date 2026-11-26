@@ -118,7 +118,7 @@ proportional to area or length.
 **View modes** (`ShapeDef.view`, type `ViewMode`):
 
 - `{ kind: 'spin', rate }`: yaw advances continuously. Rates range from `0.02`
-  (home) to `0.2` (badge, howto, mssg).
+  (home) to `0.2` (badge, howto, mssg, spaces).
 - `{ kind: 'settle' }`: yaw eases to the nearest turn of `0.35` rad plus a slow
   sway, so the shape stays facing the reader (`about`, `writing`).
 
@@ -192,5 +192,6 @@ shape again resets `tSinceSelected`, so it writes again from the start.
 | `badge`   | Name badge on a lanyard          | Uniform thin box, segments                            | 82% board, 18% lanyard                         | spin 0.2  | None                                            |
 | `howto`   | Terminal prompt `>_`             | Jittered segments, z thickness                        | `i % 3`: two chevron arms, underscore          | spin 0.2  | None                                            |
 | `mssg`    | Four stacked message pages       | Layered planes                                        | `i % 4`: one slab each                         | spin 0.2  | None                                            |
+| `spaces`  | Three Space thumbnails           | Filled rectangle, rectangle outlines by arc length    | `i % 4`: 0-1 middle filled, 2-3 side outlines  | spin 0.2  | None                                            |
 | `writing` | Quill signing "MD"               | Curved shaft, barbs, down; spline with arc-length LUT | `i % 20`: <2 shaft, <8 barbs, 8 down, else ink | settle    | `animate`: writes in 3s, ink fed from the quill |
 | `contact` | Earth with Starlink-style orbits | Fibonacci sphere, parametric orbits                   | 62% Earth, rest across 6 planes (`% 6`)        | spin 0.06 | `constellationOverlay`                          |

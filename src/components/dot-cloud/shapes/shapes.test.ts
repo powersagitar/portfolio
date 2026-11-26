@@ -11,6 +11,7 @@ import { contact, orbit } from './contact';
 import { home } from './home';
 import { howto } from './howto';
 import { mssg } from './mssg';
+import { SPACES, spaces } from './spaces';
 
 const N = 1200;
 const build = <B extends ShapeBuild>(s: ShapeDef<B>, seed = 7): B =>
@@ -18,7 +19,7 @@ const build = <B extends ShapeBuild>(s: ShapeDef<B>, seed = 7): B =>
 const pts = (s: ShapeDef) => build(s).points;
 
 describe('every shape', () => {
-  for (const s of [home, about, badge, howto, mssg, contact]) {
+  for (const s of [home, about, badge, howto, mssg, spaces, contact]) {
     test(`${s.id}: size, finite, determinism`, () => {
       const a = pts(s);
       expect(a.length).toBe(3600);
@@ -88,6 +89,27 @@ test('mssg slabs', () => {
   }
 });
 
+test('spaces thumbnails', () => {
+  const p = pts(spaces);
+  const { W, H, STEP, Z } = SPACES;
+  const e = 1e-6;
+  for (let i = 0; i < N; i++) {
+    const [x, y, z] = [p[i * 3], p[i * 3 + 1], p[i * 3 + 2]];
+    expect(Math.abs(z)).toBeLessThanOrEqual(Z + e);
+    expect(Math.abs(y)).toBeLessThanOrEqual(H + e);
+    const k = i % 4;
+    if (k < 2) {
+      expect(Math.abs(x)).toBeLessThanOrEqual(W + e);
+    } else {
+      const lx = x - (k === 2 ? -STEP : STEP);
+      expect(Math.abs(lx)).toBeLessThanOrEqual(W + e);
+      // On the outline: touching a vertical or a horizontal edge.
+      const edge = Math.min(W - Math.abs(lx), H - Math.abs(y));
+      expect(edge).toBeLessThan(1e-5);
+    }
+  }
+});
+
 test('contact earth and orbits', () => {
   const p = pts(contact);
   const ME = Math.floor(N * 0.62);
@@ -107,9 +129,10 @@ test('views and tilts', () => {
   expect(about.view).toEqual({ kind: 'settle' });
   expect(contact.view).toEqual({ kind: 'spin', rate: 0.06 });
   expect(badge.view).toEqual({ kind: 'spin', rate: 0.2 });
-  expect([home, about, badge, howto, mssg, contact].map((s) => s.tilt)).toEqual(
-    [-0.2, -0.08, -0.2, -0.2, -0.2, -0.38],
-  );
+  expect(spaces.view).toEqual({ kind: 'spin', rate: 0.2 });
+  expect(
+    [home, about, badge, howto, mssg, spaces, contact].map((s) => s.tilt),
+  ).toEqual([-0.2, -0.08, -0.2, -0.2, -0.2, -0.2, -0.38]);
 });
 
 test('registry has home plus every section', () => {

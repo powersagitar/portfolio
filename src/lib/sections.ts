@@ -6,6 +6,7 @@ export const SECTIONS = [
   { id: 'badge', title: 'Hack the Badge', meta: 'Project · Rust' },
   { id: 'howto', title: 'how-to', meta: 'Project · Shell' },
   { id: 'mssg', title: 'mssg', meta: 'Project · TypeScript' },
+  { id: 'spaces', title: 'Space Indicator', meta: 'Project · Swift' },
   { id: 'writing', title: 'Writing', meta: 'Posts' },
   { id: 'contact', title: 'Contact', meta: 'Elsewhere' },
 ] as const;

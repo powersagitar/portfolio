@@ -27,6 +27,7 @@ import { Badge } from './panels/Badge';
 import { Contact } from './panels/Contact';
 import { HowTo } from './panels/HowTo';
 import { Mssg } from './panels/Mssg';
+import { Spaces } from './panels/Spaces';
 import { Writing, type WritingPost } from './panels/Writing';
 
 type IndexListProps = {
@@ -108,6 +109,7 @@ export function IndexList({ posts, onCloudKey }: IndexListProps) {
     badge: { panel: <Badge /> },
     howto: { panel: <HowTo /> },
     mssg: { panel: <Mssg /> },
+    spaces: { panel: <Spaces /> },
     writing: { panel: <Writing posts={posts} />, sup: posts.length },
     contact: { panel: <Contact /> },
   };
