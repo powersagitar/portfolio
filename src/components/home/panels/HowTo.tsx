@@ -16,7 +16,7 @@ export function HowTo() {
           </Button>
           <Button asChild variant="pill">
             <a href="https://github.com/powersagitar/homebrew-tap">
-              Homebrew tap ↗
+              Homebrew Tap ↗
             </a>
           </Button>
         </div>
