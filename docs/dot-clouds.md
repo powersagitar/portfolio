@@ -185,13 +185,13 @@ shape again resets `tSinceSelected`, so it writes again from the start.
 
 ## Catalogue
 
-| id        | Subject                          | Recipe                                                | Points split                                   | View      | Overlay / animate                               |
-| --------- | -------------------------------- | ----------------------------------------------------- | ---------------------------------------------- | --------- | ----------------------------------------------- |
-| `home`    | Free-floating dust               | Uniform volume                                        | All points                                     | spin 0.02 | Drift added per frame                           |
-| `about`   | 4-7-7-3 feed-forward network     | `cbrt` ball clusters, pure-lerp segments              | 22 per node, rest by edge (`% edges`)          | settle    | `networkOverlay`                                |
-| `badge`   | Name badge on a lanyard          | Uniform thin box, segments                            | 82% board, 18% lanyard                         | spin 0.2  | None                                            |
-| `howto`   | Terminal prompt `>_`             | Jittered segments, z thickness                        | `i % 3`: two chevron arms, underscore          | spin 0.2  | None                                            |
-| `mssg`    | Four stacked message pages       | Layered planes                                        | `i % 4`: one slab each                         | spin 0.2  | None                                            |
-| `spaces`  | Three Space thumbnails           | Filled rectangle, rectangle outlines by arc length    | `i % 4`: 0-1 middle filled, 2-3 side outlines  | spin 0.2  | None                                            |
-| `writing` | Quill signing "MD"               | Curved shaft, barbs, down; spline with arc-length LUT | `i % 20`: <2 shaft, <8 barbs, 8 down, else ink | settle    | `animate`: writes in 3s, ink fed from the quill |
-| `contact` | Earth with Starlink-style orbits | Fibonacci sphere, parametric orbits                   | 62% Earth, rest across 6 planes (`% 6`)        | spin 0.06 | `constellationOverlay`                          |
+| id        | Subject                          | Recipe                                                              | Points split                                                   | View      | Overlay / animate                               |
+| --------- | -------------------------------- | ------------------------------------------------------------------- | -------------------------------------------------------------- | --------- | ----------------------------------------------- |
+| `home`    | Free-floating dust               | Uniform volume                                                      | All points                                                     | spin 0.02 | Drift added per frame                           |
+| `about`   | 4-7-7-3 feed-forward network     | `cbrt` ball clusters, pure-lerp segments                            | 22 per node, rest by edge (`% edges`)                          | settle    | `networkOverlay`                                |
+| `badge`   | Name badge on a lanyard          | Uniform thin box, segments                                          | 82% board, 18% lanyard                                         | spin 0.2  | None                                            |
+| `howto`   | Terminal prompt `>_`             | Jittered segments, z thickness                                      | `i % 3`: two chevron arms, underscore                          | spin 0.2  | None                                            |
+| `mssg`    | Four stacked message pages       | Layered planes                                                      | `i % 4`: one slab each                                         | spin 0.2  | None                                            |
+| `spaces`  | Space Indicator app icon         | Rounded-rect outlines by arc length, clipped fill, stroked polyline | `i % 20`: <3 back, <7 middle, <12 front, <14 bar, else numeral | spin 0.2  | None                                            |
+| `writing` | Quill signing "MD"               | Curved shaft, barbs, down; spline with arc-length LUT               | `i % 20`: <2 shaft, <8 barbs, 8 down, else ink                 | settle    | `animate`: writes in 3s, ink fed from the quill |
+| `contact` | Earth with Starlink-style orbits | Fibonacci sphere, parametric orbits                                 | 62% Earth, rest across 6 planes (`% 6`)                        | spin 0.06 | `constellationOverlay`                          |

@@ -11,7 +11,15 @@ import { contact, orbit } from './contact';
 import { home } from './home';
 import { howto } from './howto';
 import { mssg } from './mssg';
-import { SPACES, spaces } from './spaces';
+import {
+  DZ,
+  ICON,
+  LAYER_Z,
+  S,
+  inRounded,
+  roundedOutline,
+  spaces,
+} from './spaces';
 
 const N = 1200;
 const build = <B extends ShapeBuild>(s: ShapeDef<B>, seed = 7): B =>
@@ -89,25 +97,54 @@ test('mssg slabs', () => {
   }
 });
 
-test('spaces thumbnails', () => {
+test('spaces app icon', () => {
   const p = pts(spaces);
-  const { W, H, STEP, Z } = SPACES;
-  const e = 1e-6;
+  const e = 1e-4;
+  const px = (i: number) => [
+    p[i * 3] / S + ICON.CX,
+    p[i * 3 + 1] / S + ICON.CY,
+    p[i * 3 + 2],
+  ];
+  // Signed distance (px) to a rounded rectangle's outline.
+  const sdf = (x: number, y: number, b: (typeof ICON.SPACES)[number]) => {
+    const qx = Math.abs(x - (b.x + b.w / 2)) - (b.w / 2 - ICON.R);
+    const qy = Math.abs(y - (b.y + b.h / 2)) - (b.h / 2 - ICON.R);
+    return (
+      Math.hypot(Math.max(qx, 0), Math.max(qy, 0)) +
+      Math.min(Math.max(qx, qy), 0) -
+      ICON.R
+    );
+  };
+  const front = ICON.SPACES[2];
   for (let i = 0; i < N; i++) {
-    const [x, y, z] = [p[i * 3], p[i * 3 + 1], p[i * 3 + 2]];
-    expect(Math.abs(z)).toBeLessThanOrEqual(Z + e);
-    expect(Math.abs(y)).toBeLessThanOrEqual(H + e);
-    const k = i % 4;
-    if (k < 2) {
-      expect(Math.abs(x)).toBeLessThanOrEqual(W + e);
+    const [x, y, z] = px(i);
+    expect(Math.abs(p[i * 3])).toBeLessThanOrEqual(0.82);
+    expect(Math.abs(p[i * 3 + 1])).toBeLessThanOrEqual(0.67);
+    const k = i % 20;
+    if (k < 12) {
+      const layer = k < 3 ? 0 : k < 7 ? 1 : 2;
+      expect(Math.abs(z - LAYER_Z[layer])).toBeLessThanOrEqual(DZ + e);
+      expect(Math.abs(sdf(x, y, ICON.SPACES[layer]))).toBeLessThan(0.05);
+    } else if (k < 14) {
+      expect(Math.abs(z - LAYER_Z[2])).toBeLessThanOrEqual(DZ + e);
+      expect(inRounded(x, y, front, ICON.R + 0.05)).toBe(true);
+      expect(y - front.y).toBeLessThanOrEqual(ICON.BAR + 0.05);
     } else {
-      const lx = x - (k === 2 ? -STEP : STEP);
-      expect(Math.abs(lx)).toBeLessThanOrEqual(W + e);
-      // On the outline: touching a vertical or a horizontal edge.
-      const edge = Math.min(W - Math.abs(lx), H - Math.abs(y));
-      expect(edge).toBeLessThan(1e-5);
+      expect(z).toBeLessThanOrEqual(LAYER_Z[2] + e);
+      // The numeral stays inside the front Space, below its menu bar.
+      expect(sdf(x, y, front)).toBeLessThan(-20);
+      expect(y).toBeGreaterThan(front.y + ICON.BAR);
     }
   }
+});
+
+test('roundedOutline starts, turns and closes on the outline', () => {
+  const b = ICON.SPACES[0];
+  const at = (s: number) => roundedOutline(s, b, ICON.R);
+  expect(at(0)[0]).toBeCloseTo(b.x + ICON.R, 6);
+  expect(at(0)[1]).toBeCloseTo(b.y, 6);
+  expect(at(1)[0]).toBeCloseTo(b.x + ICON.R, 6);
+  expect(at(1)[1]).toBeCloseTo(b.y, 6);
 });
 
 test('contact earth and orbits', () => {
